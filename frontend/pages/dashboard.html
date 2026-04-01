@@ -397,16 +397,58 @@
   <div class="right-panel">
     <div class="rp-section">
       <div class="rp-label">ASSET</div>
-      <select class="asset-selector" id="trade-asset" onchange="changeAsset(this.value)">
-        <option value="EUR/USD">EUR/USD — Forex</option>
-        <option value="GBP/USD">GBP/USD — Forex</option>
-        <option value="BTC/USD">BTC/USD — Crypto</option>
-        <option value="ETH/USD">ETH/USD — Crypto</option>
-        <option value="GOLD">GOLD — Commodity</option>
-        <option value="OIL">OIL — Commodity</option>
-        <option value="Volatility 75">Volatility 75 — Synthetic</option>
-        <option value="Volatility 10">Volatility 10 — Synthetic</option>
-      </select>
+   <select class="asset-selector" id="trade-asset" onchange="changeAsset(this.value)">
+  <optgroup label="── Synthetic (1s)">
+    <option value="Volatility 10 (1s) Index">Volatility 10 (1s) Index</option>
+    <option value="Volatility 15 (1s) Index">Volatility 15 (1s) Index</option>
+    <option value="Volatility 25 (1s) Index">Volatility 25 (1s) Index</option>
+    <option value="Volatility 30 (1s) Index">Volatility 30 (1s) Index</option>
+    <option value="Volatility 50 (1s) Index">Volatility 50 (1s) Index</option>
+    <option value="Volatility 75 (1s) Index">Volatility 75 (1s) Index</option>
+    <option value="Volatility 90 (1s) Index">Volatility 90 (1s) Index</option>
+    <option value="Volatility 100 (1s) Index">Volatility 100 (1s) Index</option>
+  </optgroup>
+  <optgroup label="── Synthetic">
+    <option value="Volatility 10 Index">Volatility 10 Index</option>
+    <option value="Volatility 25 Index">Volatility 25 Index</option>
+    <option value="Volatility 50 Index">Volatility 50 Index</option>
+    <option value="Volatility 75 Index">Volatility 75 Index</option>
+    <option value="Volatility 100 Index">Volatility 100 Index</option>
+    <option value="Crash 300 Index">Crash 300 Index</option>
+    <option value="Crash 500 Index">Crash 500 Index</option>
+    <option value="Crash 1000 Index">Crash 1000 Index</option>
+    <option value="Boom 300 Index">Boom 300 Index</option>
+    <option value="Boom 500 Index">Boom 500 Index</option>
+    <option value="Boom 1000 Index">Boom 1000 Index</option>
+    <option value="Step Index">Step Index</option>
+  </optgroup>
+  <optgroup label="── Forex">
+    <option value="EUR/USD">EUR/USD</option>
+    <option value="GBP/USD">GBP/USD</option>
+    <option value="USD/JPY">USD/JPY</option>
+    <option value="AUD/USD">AUD/USD</option>
+    <option value="USD/CHF">USD/CHF</option>
+    <option value="NZD/USD">NZD/USD</option>
+    <option value="EUR/GBP">EUR/GBP</option>
+    <option value="EUR/JPY">EUR/JPY</option>
+  </optgroup>
+  <optgroup label="── Crypto">
+    <option value="BTC/USD">BTC/USD</option>
+    <option value="ETH/USD">ETH/USD</option>
+    <option value="LTC/USD">LTC/USD</option>
+    <option value="XRP/USD">XRP/USD</option>
+    <option value="SOL/USD">SOL/USD</option>
+    <option value="BNB/USD">BNB/USD</option>
+  </optgroup>
+  <optgroup label="── Commodities">
+    <option value="GOLD">GOLD</option>
+    <option value="SILVER">SILVER</option>
+    <option value="OIL">OIL</option>
+    <option value="NATURAL GAS">NATURAL GAS</option>
+    <option value="COPPER">COPPER</option>
+    <option value="PLATINUM">PLATINUM</option>
+  </optgroup>
+</select>
     </div>
     <!-- TRADE CATEGORY -->
     <div class="rp-section">
@@ -837,18 +879,30 @@
     container.innerHTML = html;
   }
 
-  function changeAsset(asset) {
-    currentAsset=asset; chartPrice=ASSETS[asset]?.base||1.0;
-    chartData=[]; tickTimes=[]; digitCounts=Array(10).fill(0); digitTotal=0;
-    let p=chartPrice;
-    for (let i=0;i<maxPoints;i++){p=p*(1+(Math.random()-0.499)*0.0008);chartData.push(p);}
-    document.getElementById('tb-asset').textContent=asset;
-    // Update right panel selector if asset exists there
-    const sel=document.getElementById('trade-asset');
-    if([...sel.options].some(o=>o.value===asset)) sel.value=asset;
-    closeAssetModal();
-    renderChart();
+ function changeAsset(asset) {
+  currentAsset = asset;  // ← this must be here
+  chartPrice = ASSETS[asset]?.base || 1.0;
+  chartData = []; tickTimes = []; digitCounts = Array(10).fill(0); digitTotal = 0;
+  let p = chartPrice;
+  for (let i = 0; i < maxPoints; i++) { p = p*(1+(Math.random()-0.499)*0.0008); chartData.push(p); }
+  document.getElementById('tb-asset').textContent = asset;
+
+  // ── ADD THIS BLOCK ──
+  // Sync the right-panel dropdown if the asset exists there
+  const sel = document.getElementById('trade-asset');
+  const exists = [...sel.options].some(o => o.value === asset);
+  if (exists) {
+    sel.value = asset;
+  } else {
+    // Asset is not in dropdown (e.g. Volatility 15 1s) — force update currentAsset anyway
+    currentAsset = asset;
   }
+ 
+
+  closeAssetModal();
+  renderChart();
+}
+
 
   function toggleAssetMenu() { openAssetModal(); }
 
@@ -913,36 +967,57 @@
   /* ── TRADE ── */
   const DIGIT_DIRS = ['even','odd','matches','differs','over','under'];
 
-  async function placeTrade(direction) {
-    if (currentStake<1) return showToast('Error','Minimum stake is $1.00','error');
-    const bal=isDemoMode?demoBalance:(user.balance||0);
-    if (currentStake>bal) return showToast('Error','Insufficient balance','error');
-    try {
-      const isDigit = DIGIT_DIRS.includes(direction);
-      const payload = {
-        asset: currentAsset,
-        direction,
-        amount: currentStake,
-        duration: isDigit ? 2 : currentExpiry,
-        isDemo: isDemoMode
-      };
-      // Send targetDigit for matches/differs/over/under
-      if (['matches','differs','over','under'].includes(direction)) {
-        payload.targetDigit = selectedDigit;
-      }
-      const res = await api.placeTrade(payload);
-      if (isDemoMode){
-        demoBalance -= currentStake; updateBalance(demoBalance);
-        const label = direction.toUpperCase();
-        showToast(`${label} Trade`,`${label} on ${currentAsset} · $${currentStake.toFixed(2)} (Demo)`,'demo');
-      } else {
-        updateBalance(res.balance);
-        const label = direction.toUpperCase();
-        showToast(`${label} Trade Placed`,`${label} on ${currentAsset} · $${currentStake.toFixed(2)}`);
-      }
-      await refreshActiveTrades();
-    } catch(err){showToast('Error',err.message||'Failed to place trade','error');}
-  }
+/* --- Find this function in your <script> tag --- */
+/* --- Find your placeTrade function and update this section --- */
+ async function placeTrade(direction) {
+            console.log(`Attempting to place trade: ${direction}`);
+
+            if (currentStake < 1) {
+                return showToast('Error', 'Minimum stake is $1.00', 'error');
+            }
+
+            // FIX 1: Ensure duration is in seconds (e.g., 2 -> 120)
+            // Assuming currentExpiry is in minutes if < 15, otherwise it's already in seconds.
+            let finalDuration = currentExpiry;
+
+            console.log(`Original expiry: ${currentExpiry}, Final duration (seconds): ${finalDuration}`);
+
+
+            const payload = {
+                asset: currentAsset,
+                // Fixes 'differs' vs 'differ' (backend might expect 'differ')
+                direction: direction === 'differs' ? 'differ' : direction,
+                amount: currentStake,
+                duration: finalDuration,
+                isDemo: isDemoMode,
+                entryPrice: chartPrice
+            };
+
+
+            // FIX 2: Backend validation expects 'digitPrediction', not 'targetDigit'
+            // Ensure selectedDigit is defined (0-9) for digit trades
+            if (['matche', 'differ'].includes(payload.direction)) {
+                if (typeof selectedDigit === 'undefined' || selectedDigit === null) {
+                    // Fallback or explicit error if selectedDigit is not set
+                    return showToast('Error', 'Please select a digit for this trade type.', 'error');
+                }
+                payload.digitPrediction = selectedDigit;
+            }
+
+            console.log("Trade Payload:", payload);
+
+            try {
+                const res = await api.placeTrade(payload);
+                // ... success logic ...
+                console.log("Trade API response:", res);
+                showToast('Success', 'Trade placed successfully', 'success');
+                await refreshActiveTrades();
+            } catch (err) {
+                // This will now show you the specific validation error from the server
+                showToast('Error', err.message || 'An unknown error occurred.', 'error');
+                console.error("Full Error Response:", err);
+            }
+        }
 
   /* ── POSITIONS ── */
   function switchPosTab(tab) {
@@ -1119,15 +1194,16 @@
           <span>⚡ ODD</span><span class="btn-sub">1, 3, 5, 7, 9</span>
         </button>
       </div>`;
-    } else if (tradeCategory === 'matches') {
+  } else if (tradeCategory === 'matches') {
       sec.innerHTML = `<div class="trade-btns">
-        <button class="btn-call" onclick="placeTrade('matches')" style="background:#10b981">
-          <span>🎯 MATCHES</span><span class="btn-sub">Last digit = ${selectedDigit}</span>
+        <button class="btn-call" onclick="placeTrade('match')" style="background:#10b981">
+          <span>🎯 MATCH</span><span class="btn-sub">Last digit = ${selectedDigit}</span>
         </button>
-        <button class="btn-put" onclick="placeTrade('differs')" style="background:#ef4444">
-          <span>✗ DIFFERS</span><span class="btn-sub">Last digit ≠ ${selectedDigit}</span>
+        <button class="btn-put" onclick="placeTrade('differ')" style="background:#ef4444">
+          <span>✗ DIFFER</span><span class="btn-sub">Last digit ≠ ${selectedDigit}</span>
         </button>
       </div>`;
+      // ^ FIXED: Changed 'differs' to 'differ' to match the backend
     } else if (tradeCategory === 'overunder') {
       sec.innerHTML = `<div class="trade-btns">
         <button class="btn-call" onclick="placeTrade('over')" style="background:#10b981">
@@ -1138,6 +1214,8 @@
         </button>
       </div>`;
     }
+
+    
   }
 
   /* ── LOGOUT ── */
