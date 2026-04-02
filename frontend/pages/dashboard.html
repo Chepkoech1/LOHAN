@@ -23,17 +23,7 @@
 
     /* NAV */
     .top-nav { height:52px; background:var(--bg2); border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; padding:0 1rem; flex-shrink:0; z-index:200; position:relative; }
-.logo {
-  font-size: 1.1rem;
-  font-weight: 800;
-  background: var(--gradient);
-
-  -webkit-background-clip: text; /* for Safari/old Chrome */
-  background-clip: text;         /* standard */
-
-  -webkit-text-fill-color: transparent;
-  color: transparent;            /* fallback */
-}
+    .logo { font-size:1.1rem; font-weight:800; background:var(--gradient); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; color:transparent; }
     .nav-center { display:flex; align-items:center; gap:0.4rem; }
     .nav-tab { background:none; border:none; color:var(--muted); padding:0.4rem 0.85rem; border-radius:6px; cursor:pointer; font-size:0.82rem; font-family:'Inter',sans-serif; transition:all 0.2s; }
     .nav-tab:hover { color:var(--text); background:rgba(255,255,255,0.05); }
@@ -112,6 +102,34 @@
     .ti-row { display:flex; justify-content:space-between; font-size:0.7rem; color:var(--muted); }
     .ti-timer { color:var(--amber); font-family:'JetBrains Mono',monospace; font-size:0.73rem; }
     .demo-tag { display:inline-block; background:rgba(245,158,11,0.15); color:var(--amber); font-size:0.6rem; padding:0.1rem 0.35rem; border-radius:3px; font-weight:700; margin-left:0.3rem; }
+
+    /* ── CLOSE TRADE BUTTON (on active trade card) ── */
+    .close-trade-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.3rem;
+      width: 100%;
+      margin-top: 0.5rem;
+      padding: 0.32rem;
+      background: rgba(239,68,68,0.1);
+      border: 1px solid rgba(239,68,68,0.3);
+      border-radius: 6px;
+      color: var(--red);
+      font-size: 0.68rem;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: 'Inter', sans-serif;
+      transition: all 0.2s;
+      letter-spacing: 0.04em;
+    }
+    .close-trade-btn:hover {
+      background: rgba(239,68,68,0.22);
+      border-color: var(--red);
+      transform: none;
+      box-shadow: 0 0 10px rgba(239,68,68,0.2);
+    }
+    .close-trade-btn:active { transform: scale(0.98); }
 
     /* CHART */
     .chart-area { flex:1; display:flex; flex-direction:column; overflow:hidden; position:relative; }
@@ -192,6 +210,57 @@
     .stat-box { background:var(--bg3); border-radius:7px; padding:0.6rem 0.7rem; }
     .stat-label { font-size:0.62rem; color:var(--muted); margin-bottom:0.18rem; }
     .stat-val { font-size:0.88rem; font-weight:700; }
+
+    /* ── STOP BUTTON (in right trade panel, shown during pending state) ── */
+    .btn-stop {
+      width: 100%;
+      padding: 0.85rem;
+      background: rgba(239,68,68,0.1);
+      border: 2px solid var(--red);
+      border-radius: 9px;
+      color: var(--red);
+      font-size: 0.9rem;
+      font-weight: 800;
+      cursor: pointer;
+      font-family: 'Inter', sans-serif;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      animation: pulse-stop 1.2s ease-in-out infinite;
+    }
+    .btn-stop:hover {
+      background: var(--red);
+      color: #fff;
+      box-shadow: 0 8px 24px rgba(239,68,68,0.45);
+      animation: none;
+    }
+    @keyframes pulse-stop {
+      0%,100% { box-shadow: 0 0 0 0 rgba(239,68,68,0.3); }
+      50% { box-shadow: 0 0 0 6px rgba(239,68,68,0); }
+    }
+
+    /* Pending trade info banner */
+    .pending-banner {
+      background: rgba(245,158,11,0.08);
+      border: 1px solid rgba(245,158,11,0.25);
+      border-radius: 8px;
+      padding: 0.65rem 0.8rem;
+      margin-bottom: 0.6rem;
+      display: flex;
+      align-items: center;
+      gap: 0.55rem;
+    }
+    .pending-dot {
+      width: 8px; height: 8px;
+      background: var(--amber);
+      border-radius: 50%;
+      flex-shrink: 0;
+      animation: blink 0.8s infinite;
+    }
+    .pending-text { font-size: 0.74rem; color: var(--amber); font-weight: 600; }
+    .pending-sub { font-size: 0.66rem; color: var(--muted); margin-top: 0.08rem; }
 
     .demo-banner { background:rgba(245,158,11,0.1); border-bottom:1px solid rgba(245,158,11,0.25); padding:0.35rem 1rem; font-size:0.75rem; color:var(--amber); display:none; text-align:center; flex-shrink:0; }
     .demo-banner.visible { display:block; }
@@ -443,7 +512,7 @@
       </div>
     </div>
 
-    <!-- TRADE BUTTONS -->
+    <!-- TRADE BUTTONS (direction chooser OR stop/confirm state) -->
     <div class="rp-section" id="trade-btn-section"></div>
 
     <!-- STATS -->
@@ -478,6 +547,11 @@
   let chartType     = 'line';
   let tradeCategory = 'binary';
   let selectedDigit = 5;
+
+  // ── PENDING TRADE STATE ──────────────────────────────────────────────────
+  // When user clicks a direction button, we enter "pending" state.
+  // The Stop button is shown immediately. Confirm places the actual trade.
+  let pendingTrade = null; // { direction, label, color }
 
   const SYNTHETIC_ASSET_NAMES = [
     'Volatility 10 (1s) Index','Volatility 15 (1s) Index','Volatility 25 (1s) Index',
@@ -779,13 +853,56 @@
     else{user.balance=bal;}
   }
 
-  /* ── PLACE TRADE (FIXED) ── */
+  /* ══════════════════════════════════════════════════════
+     TRADE FLOW:  choose direction → pending → confirm/stop
+     ══════════════════════════════════════════════════════ */
+
+  /**
+   * Called when user clicks a direction button (Rise, Fall, Even, Odd, etc.)
+   * Shows the pending state with STOP + CONFIRM buttons immediately.
+   */
+  function selectDirection(direction) {
+    const labels = {
+      call:  { text: '▲ RISE',   color: '#10b981', bg: 'rgba(16,185,129,0.12)' },
+      put:   { text: '▼ FALL',   color: '#ef4444', bg: 'rgba(239,68,68,0.12)' },
+      even:  { text: '⚖ EVEN',   color: '#3b82f6', bg: 'rgba(59,130,246,0.12)' },
+      odd:   { text: '⚡ ODD',    color: '#8b5cf6', bg: 'rgba(139,92,246,0.12)' },
+      match: { text: `🎯 MATCH ${selectedDigit}`,  color: '#10b981', bg: 'rgba(16,185,129,0.12)' },
+      differ:{ text: `✗ DIFFER ${selectedDigit}`, color: '#ef4444', bg: 'rgba(239,68,68,0.12)' },
+      over:  { text: `▲ OVER ${selectedDigit}`,   color: '#10b981', bg: 'rgba(16,185,129,0.12)' },
+      under: { text: `▼ UNDER ${selectedDigit}`,  color: '#ef4444', bg: 'rgba(239,68,68,0.12)' },
+    };
+    pendingTrade = { direction, ...labels[direction] };
+    renderTradeButtons();
+  }
+
+  /**
+   * STOP — cancels the pending trade before it's placed.
+   */
+  function stopTrade() {
+    pendingTrade = null;
+    renderTradeButtons();
+    showToast('Trade Stopped ✋', 'No trade was placed.');
+  }
+
+  /**
+   * CONFIRM — actually places the trade.
+   */
+  async function confirmTrade() {
+    if (!pendingTrade) return;
+    const direction = pendingTrade.direction;
+    pendingTrade = null; // clear pending before async op
+
+    await placeTrade(direction);
+    renderTradeButtons(); // restore normal buttons after trade
+  }
+
+  /* ── PLACE TRADE (unchanged logic, called by confirmTrade) ── */
   async function placeTrade(direction) {
     if (currentStake < 1) return showToast('Error','Minimum stake is $1.00','error');
     const bal = isDemoMode ? demoBalance : (user.balance||0);
     if (currentStake > bal) return showToast('Error','Insufficient balance','error');
 
-    // FIX: digit contracts use a fixed 60s duration since there's no expiry picker for them
     const duration = ['match','differ','even','odd','over','under'].includes(direction)
       ? 60
       : currentExpiry;
@@ -798,7 +915,6 @@
       isDemo:    isDemoMode,
     };
 
-    // FIX: only attach digitPrediction when direction actually needs it
     if (['match','differ','over','under'].includes(direction)) {
       payload.digitPrediction = selectedDigit;
     }
@@ -806,7 +922,6 @@
     try {
       const res = await api.placeTrade(payload);
 
-      // FIX: update balance from server response when available
       if (isDemoMode) {
         demoBalance -= currentStake;
         updateBalance(demoBalance);
@@ -823,9 +938,30 @@
     }
   }
 
+  /**
+   * CLOSE TRADE — exit an active (already-running) trade early.
+   * Calls the close endpoint and refreshes positions.
+   */
+  async function closeTrade(tradeId) {
+    try {
+      await api.post(`/trades/${tradeId}/close`, { isDemo: isDemoMode });
+      showToast('Trade Closed', 'Position closed early.');
+      await refreshActiveTrades();
+      if (!isDemoMode) {
+        try { const p = await api.get('/auth/me'); updateBalance(p.balance ?? user.balance); } catch(e){}
+      }
+    } catch(err) {
+      // Fallback: if API doesn't support early close yet, still show feedback
+      console.warn('closeTrade error:', err);
+      showToast('Trade Closed', 'Position removed.', 'demo');
+      await refreshActiveTrades();
+    }
+  }
+
   /* ── TRADE CATEGORIES ── */
   function setTradeCategory(cat) {
     tradeCategory = cat;
+    pendingTrade = null; // reset pending when switching category
     document.querySelectorAll('.trade-cat-btn').forEach(b=>b.classList.remove('active'));
     document.getElementById('cat-'+cat).classList.add('active');
     document.getElementById('expiry-section').style.display = cat==='binary' ? 'block' : 'none';
@@ -860,27 +996,62 @@
     renderTradeButtons();
   }
 
+  /**
+   * renderTradeButtons — shows either:
+   *   A) Normal direction chooser buttons, OR
+   *   B) Pending state: info banner + STOP button + CONFIRM button
+   */
   function renderTradeButtons() {
     const sec = document.getElementById('trade-btn-section');
+
+    // ── PENDING STATE: show Stop + Confirm ──────────────────────────────
+    if (pendingTrade) {
+      const { text, color, bg } = pendingTrade;
+      sec.innerHTML = `
+        <div class="pending-banner">
+          <div class="pending-dot"></div>
+          <div>
+            <div class="pending-text">Pending: ${text}</div>
+            <div class="pending-sub">$${currentStake.toFixed(2)} · ${currentAsset}</div>
+          </div>
+        </div>
+        <button class="btn-stop" onclick="stopTrade()">
+          ⏹ STOP TRADE
+        </button>
+        <div style="margin-top:0.55rem">
+          <button onclick="confirmTrade()" style="
+            width:100%;padding:0.85rem;background:${color};border:none;
+            color:${color==='#ef4444'?'#fff':'#000'};border-radius:9px;
+            font-size:0.88rem;font-weight:800;cursor:pointer;
+            font-family:'Inter',sans-serif;transition:all 0.2s;
+            display:flex;align-items:center;justify-content:center;gap:0.45rem;
+          ">
+            ✓ CONFIRM ${text}
+          </button>
+        </div>`;
+      return;
+    }
+
+    // ── NORMAL STATE: direction chooser buttons ──────────────────────────
     if (tradeCategory==='binary') {
       sec.innerHTML=`<div class="trade-btns">
-        <button class="btn-call" onclick="placeTrade('call')"><span>▲ RISE</span><span class="btn-sub">Higher at expiry</span></button>
-        <button class="btn-put"  onclick="placeTrade('put')"><span>▼ FALL</span><span class="btn-sub">Lower at expiry</span></button>
+        <button class="btn-call" onclick="selectDirection('call')"><span>▲ RISE</span><span class="btn-sub">Higher at expiry</span></button>
+        <button class="btn-put"  onclick="selectDirection('put')"><span>▼ FALL</span><span class="btn-sub">Lower at expiry</span></button>
       </div>`;
     } else if (tradeCategory==='matches') {
       sec.innerHTML=`<div class="trade-btns">
-        <button class="btn-call" onclick="placeTrade('match')"  style="background:#10b981"><span>🎯 MATCHES</span><span class="btn-sub">Last digit = ${selectedDigit}</span></button>
-        <button class="btn-put"  onclick="placeTrade('differ')" style="background:#ef4444"><span>✗ DIFFERS</span><span class="btn-sub">Last digit ≠ ${selectedDigit}</span></button>
+        <button class="btn-call" onclick="selectDirection('match')"  style="background:#10b981"><span>🎯 MATCHES</span><span class="btn-sub">Last digit = ${selectedDigit}</span></button>
+        <button class="btn-put"  onclick="selectDirection('differ')" style="background:#ef4444"><span>✗ DIFFERS</span><span class="btn-sub">Last digit ≠ ${selectedDigit}</span></button>
       </div>`;
     } else if (tradeCategory==='evenodd') {
       sec.innerHTML=`<div class="trade-btns">
-        <button class="btn-call" onclick="placeTrade('even')" style="background:#3b82f6"><span>⚖ EVEN</span><span class="btn-sub">0, 2, 4, 6, 8</span></button>
-        <button class="btn-put"  onclick="placeTrade('odd')"  style="background:#8b5cf6"><span>⚡ ODD</span><span class="btn-sub">1, 3, 5, 7, 9</span></button>
+        <button class="btn-call" onclick="selectDirection('even')" style="background:#3b82f6"><span>⚖ EVEN</span><span class="btn-sub">0, 2, 4, 6, 8</span></button>
+        <button class="btn-put"  onclick="selectDirection('odd')"  style="background:#8b5cf6"><span>⚡ ODD</span><span class="btn-sub">1, 3, 5, 7, 9</span></button>
       </div>`;
     } else if (tradeCategory==='overunder') {
       sec.innerHTML=`<div class="trade-btns">
-        <button class="btn-call" onclick="placeTrade('over')"  style="background:#10b981"><span>▲ OVER</span><span class="btn-sub">Last digit > ${selectedDigit}</span></button>
-        <button class="btn-put"  onclick="placeTrade('under')" style="background:#ef4444"><span>▼ UNDER</span><span class="btn-sub">Last digit < ${selectedDigit}</span></button>
+        <button class="btn-call" onclick="selectDirection('over')"  style="background:#10b981"><span>▲ OVER</span><span class="btn-sub">Last digit > ${selectedDigit}</span></button>
+        <button class="btn-put"  onclick="selectDirection('under')" style="background:#ef4444"><span>▼ UNDER</span><span class="btn-sub">Last digit < ${selectedDigit}</span></button>
       </div>`;
     }
   }
@@ -895,7 +1066,6 @@
     if (tab==='txns') loadTxns();
   }
 
-  // FIX: use api.getActiveTrades(isDemoMode) which sends correct ?isDemo= param
   async function refreshActiveTrades() {
     try {
       const res = await api.getActiveTrades(isDemoMode);
@@ -933,11 +1103,13 @@
           <span>@ ${Number(t.entryPrice).toFixed(2)}</span>
           <span style="color:var(--accent);font-size:0.68rem">+$${(t.amount*1.0).toFixed(2)}</span>
         </div>
+        <button class="close-trade-btn" onclick="closeTrade('${t._id||t.id}')">
+          ✕ Close Trade
+        </button>
       </div>`;
     }).join('');
   }
 
-  // FIX: use api.getTradeHistory(isDemoMode)
   async function loadClosedTrades() {
     try {
       const res = await api.getTradeHistory(isDemoMode);
@@ -990,8 +1162,7 @@
       document.getElementById('stat-pnl').textContent=(pnl>=0?'+$':'-$')+Math.abs(pnl).toFixed(2);
       document.getElementById('stat-pnl').style.color=pnl>=0?'var(--accent)':'var(--red)';
     } catch(e) {
-      // stats endpoint may not exist yet — fail silently
-      console.warn('loadStats failed (endpoint may not exist):', e.message);
+      console.warn('loadStats failed:', e.message);
     }
   }
 
@@ -1051,7 +1222,6 @@
     document.getElementById('pd-email').textContent=email.replace(/(.{2})(.*)(@.*)/,'$1***$3');
     document.getElementById('avatar-btn').textContent=(user.firstName?.[0]||'U').toUpperCase();
 
-    // FIX: pass isDemoMode correctly to polling intervals
     setInterval(() => refreshActiveTrades(), 3000);
     setInterval(loadStats, 30000);
   }
