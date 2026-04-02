@@ -117,22 +117,17 @@
     .live-pill { display:flex; align-items:center; gap:0.38rem; font-size:0.7rem; color:var(--red); font-weight:600; margin-left:auto; }
     .live-dot { width:7px; height:7px; background:var(--red); border-radius:50%; animation:blink 1.5s infinite; }
     @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
-
-    /* CHART TOOLBAR */
     .chart-tool-sep { width:1px; height:20px; background:var(--border); margin:0 2px; }
     .chart-tool-btn { width:28px; height:28px; background:none; border:none; border-radius:5px; color:var(--muted); cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:0.85rem; transition:all 0.2s; position:relative; }
     .chart-tool-btn:hover { background:rgba(255,255,255,0.06); color:var(--text); }
     .chart-tool-btn.active { background:var(--accent-dim); color:var(--accent); }
-    .chart-tool-btn[title]:hover::after { content:attr(title); position:absolute; bottom:-26px; left:50%; transform:translateX(-50%); background:var(--bg3); color:var(--text2); font-size:0.62rem; padding:2px 6px; border-radius:4px; white-space:nowrap; pointer-events:none; z-index:100; border:1px solid var(--border); }
-
-    /* ZOOM CONTROLS */
     .zoom-group { display:flex; background:var(--bg3); border-radius:6px; padding:2px; gap:1px; }
     .zoom-btn { width:24px; height:24px; background:none; border:none; border-radius:4px; color:var(--muted); cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:0.85rem; transition:all 0.2s; font-family:'Inter',sans-serif; }
     .zoom-btn:hover { background:rgba(255,255,255,0.08); color:var(--text); }
-
     .chart-canvas-wrap { flex:1; position:relative; background:var(--bg4); }
     #priceChart { width:100% !important; height:100% !important; }
-    /* Asset modal styles */
+
+    /* Asset modal */
     .cat-icon { width:32px;height:32px;display:flex;align-items:center;justify-content:center;border-radius:7px;cursor:pointer;font-size:1rem;color:var(--muted);transition:all 0.2s;user-select:none; }
     .cat-icon:hover { background:rgba(255,255,255,0.07);color:var(--text); }
     .cat-icon.active { background:var(--accent-dim);color:var(--accent); }
@@ -151,11 +146,6 @@
     .right-panel { width:280px; background:var(--bg2); border-left:1px solid var(--border); display:flex; flex-direction:column; flex-shrink:0; overflow-y:auto; }
     .rp-section { padding:0.9rem 1rem; border-bottom:1px solid var(--border); }
     .rp-label { font-size:0.67rem; color:var(--muted); letter-spacing:0.08em; margin-bottom:0.55rem; font-weight:600; }
-    .asset-selector { width:100%; background:var(--bg3); border:1px solid var(--border); border-radius:8px; padding:0.6rem 0.75rem; color:var(--text); font-size:0.85rem; cursor:pointer; font-family:'Inter',sans-serif; }
-    .asset-selector:focus { outline:none; border-color:var(--accent); }
-    .trade-type-row { display:flex; gap:0.45rem; }
-    .trade-type-btn { flex:1; padding:0.48rem; background:var(--bg3); border:1px solid var(--border); border-radius:7px; color:var(--muted); font-size:0.76rem; cursor:pointer; text-align:center; transition:all 0.2s; font-family:'Inter',sans-serif; }
-    .trade-type-btn.active { border-color:var(--accent); color:var(--accent); background:var(--accent-dim); }
     .expiry-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:0.38rem; }
     .exp-btn { background:var(--bg3); border:1px solid var(--border); border-radius:7px; padding:0.5rem 0.2rem; text-align:center; cursor:pointer; transition:all 0.2s; }
     .exp-btn:hover { border-color:var(--muted); }
@@ -167,7 +157,6 @@
     .stake-btn:hover { border-color:var(--accent); color:var(--accent); }
     .stake-input { flex:1; background:var(--bg3); border:1px solid var(--border); border-radius:6px; padding:0.45rem 0.5rem; color:var(--text); font-size:0.92rem; font-family:'JetBrains Mono',monospace; text-align:center; font-weight:700; }
     .stake-input:focus { outline:none; border-color:var(--accent); }
-    .stake-currency { font-size:0.72rem; color:var(--muted); }
     .quick-stakes { display:flex; gap:0.35rem; margin-top:0.45rem; flex-wrap:wrap; }
     .qs-btn { flex:1; min-width:40px; background:var(--bg3); border:1px solid var(--border); border-radius:5px; padding:0.32rem; color:var(--text2); font-size:0.7rem; cursor:pointer; text-align:center; transition:all 0.2s; }
     .qs-btn:hover { border-color:var(--accent); color:var(--accent); }
@@ -231,8 +220,7 @@
         <div class="notif-header"><span class="notif-title">Notifications</span><button class="notif-clear" onclick="clearNotifs()">Mark all read</button></div>
         <div id="notif-list">
           <div class="notif-item"><div class="notif-dot green"></div><div><div class="notif-text">Your deposit of $10.00 was confirmed.</div><div class="notif-time">2 min ago</div></div></div>
-          <div class="notif-item"><div class="notif-dot amber"></div><div><div class="notif-text">Trade on EUR/USD expired — result pending.</div><div class="notif-time">10 min ago</div></div></div>
-          <div class="notif-item"><div class="notif-dot blue"></div><div><div class="notif-text">Welcome to Lohan! Complete your profile to get started.</div><div class="notif-time">Today</div></div></div>
+          <div class="notif-item"><div class="notif-dot amber"></div><div><div class="notif-text">Welcome to Lohan! Start trading.</div><div class="notif-time">Today</div></div></div>
         </div>
       </div>
     </div>
@@ -256,7 +244,7 @@
       <div class="dropdown" id="profile-panel" style="width:235px">
         <div class="pd-header">
           <div class="pd-name" id="pd-name">User</div>
-          <div class="pd-email" id="pd-email"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="f683859384b6938e979b869a93d895999b">[email&#160;protected]</a></div>
+          <div class="pd-email" id="pd-email">user@example.com</div>
         </div>
         <div class="pd-item" onclick="openEditProfile()"><span class="pd-icon">👤</span>Edit Profile</div>
         <div class="pd-item" onclick="openModal('modal-password')"><span class="pd-icon">🔒</span>Change Password</div>
@@ -298,18 +286,14 @@
   <!-- CENTER: Chart -->
   <div class="chart-area">
     <div class="chart-topbar">
-      <!-- Asset selector -->
       <div class="asset-pill" onclick="toggleAssetMenu()">
-        <span style="font-size:0.9rem">📈</span>
-        <div class="asset-name" id="tb-asset">EUR/USD</div>
+        <span style="font-size:0.9rem">📊</span>
+        <div class="asset-name" id="tb-asset">Volatility 10 (1s) Index</div>
         <span style="color:var(--muted);font-size:0.65rem">▼</span>
       </div>
-      <div style="font-family:'JetBrains Mono',monospace;font-size:0.9rem;font-weight:700" id="tb-price">1.08450</div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:0.9rem;font-weight:700" id="tb-price">1245.50</div>
       <div class="asset-change up" id="tb-change">+0.05%</div>
-
       <div class="chart-tool-sep"></div>
-
-      <!-- Timeframes -->
       <div class="tf-group">
         <button class="tf-btn active" onclick="setTF(this)">1s</button>
         <button class="tf-btn" onclick="setTF(this)">5s</button>
@@ -317,10 +301,7 @@
         <button class="tf-btn" onclick="setTF(this)">1m</button>
         <button class="tf-btn" onclick="setTF(this)">5m</button>
       </div>
-
       <div class="chart-tool-sep"></div>
-
-      <!-- Chart type tools -->
       <button class="chart-tool-btn active" id="tool-line" onclick="setChartType('line',this)" title="Line Chart">
         <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><polyline points="1,12 5,6 9,9 15,3" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>
       </button>
@@ -337,29 +318,22 @@
           <line x1="11.5" y1="11" x2="11.5" y2="13" stroke="#ef4444" stroke-width="1.2"/>
         </svg>
       </button>
-
       <div class="chart-tool-sep"></div>
-
-      <!-- Zoom controls -->
       <div class="zoom-group">
-        <button class="zoom-btn" onclick="chartZoom(1.25)" title="Zoom In">+</button>
-        <button class="zoom-btn" onclick="chartReset()" title="Reset" style="color:var(--accent);font-size:0.75rem">↺</button>
-        <button class="zoom-btn" onclick="chartZoom(0.8)" title="Zoom Out">−</button>
+        <button class="zoom-btn" onclick="chartZoom(1.25)">+</button>
+        <button class="zoom-btn" onclick="chartReset()" style="color:var(--accent);font-size:0.75rem">↺</button>
+        <button class="zoom-btn" onclick="chartZoom(0.8)">−</button>
       </div>
-
       <div class="chart-tool-sep"></div>
-
-      <!-- Download -->
       <button class="chart-tool-btn" onclick="downloadChart()" title="Download Chart">
         <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 1v8M4 6l3 3 3-3M2 11h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
       </button>
-
       <div class="live-pill"><div class="live-dot"></div>LIVE</div>
     </div>
 
-    <!-- Asset Selector Modal (Deriv-style) -->
+    <!-- Asset Selector Modal -->
     <div id="asset-modal" style="display:none;position:fixed;inset:0;z-index:400;background:rgba(0,0,0,0.5)" onclick="if(event.target===this)closeAssetModal()">
-      <div style="position:absolute;top:96px;left:230px;width:310px;height:500px;background:var(--bg2);border:1px solid var(--border);border-radius:12px;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,0.6)">
+      <div style="position:absolute;top:96px;left:230px;width:310px;height:460px;background:var(--bg2);border:1px solid var(--border);border-radius:12px;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,0.6)">
         <div style="padding:0.75rem 1rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0">
           <span style="font-size:0.85rem;font-weight:700">Select Market</span>
           <button onclick="closeAssetModal()" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:1.1rem;line-height:1;padding:0">✕</button>
@@ -371,11 +345,8 @@
         </div>
         <div style="display:flex;flex:1;overflow:hidden">
           <div style="width:44px;background:var(--bg3);border-right:1px solid var(--border);display:flex;flex-direction:column;align-items:center;padding:0.5rem 0;gap:0.3rem;flex-shrink:0">
-            <div class="cat-icon active" onclick="setAssetCat('all',this)"       title="All">⊞</div>
-            <div class="cat-icon"        onclick="setAssetCat('forex',this)"     title="Forex">💱</div>
-            <div class="cat-icon"        onclick="setAssetCat('crypto',this)"    title="Crypto">₿</div>
-            <div class="cat-icon"        onclick="setAssetCat('commodity',this)" title="Commodities">🥇</div>
-            <div class="cat-icon"        onclick="setAssetCat('synthetic',this)" title="Synthetic">📊</div>
+            <div class="cat-icon active" onclick="setAssetCat('all',this)" title="All">⊞</div>
+            <div class="cat-icon" onclick="setAssetCat('synthetic',this)" title="Volatility">📊</div>
           </div>
           <div style="flex:1;overflow-y:auto" id="asset-modal-list"></div>
         </div>
@@ -385,71 +356,13 @@
     <div class="chart-canvas-wrap">
       <canvas id="priceChart"></canvas>
     </div>
-
-    <!-- X-axis timestamps -->
     <div id="x-axis" style="height:26px;background:var(--bg4);border-top:1px solid var(--border);display:flex;align-items:center;padding:0 72px 0 10px;flex-shrink:0;overflow:hidden;position:relative"></div>
-
-    <!-- Last-digit bubbles -->
     <div id="digit-row" style="height:68px;background:var(--bg2);border-top:1px solid var(--border);display:flex;align-items:center;justify-content:center;gap:6px;flex-shrink:0;padding:0 0.5rem;overflow:hidden"></div>
   </div>
 
   <!-- RIGHT: Trade Panel -->
   <div class="right-panel">
-    <div class="rp-section">
-      <div class="rp-label">ASSET</div>
-   <select class="asset-selector" id="trade-asset" onchange="changeAsset(this.value)">
-  <optgroup label="── Synthetic (1s)">
-    <option value="Volatility 10 (1s) Index">Volatility 10 (1s) Index</option>
-    <option value="Volatility 15 (1s) Index">Volatility 15 (1s) Index</option>
-    <option value="Volatility 25 (1s) Index">Volatility 25 (1s) Index</option>
-    <option value="Volatility 30 (1s) Index">Volatility 30 (1s) Index</option>
-    <option value="Volatility 50 (1s) Index">Volatility 50 (1s) Index</option>
-    <option value="Volatility 75 (1s) Index">Volatility 75 (1s) Index</option>
-    <option value="Volatility 90 (1s) Index">Volatility 90 (1s) Index</option>
-    <option value="Volatility 100 (1s) Index">Volatility 100 (1s) Index</option>
-  </optgroup>
-  <optgroup label="── Synthetic">
-    <option value="Volatility 10 Index">Volatility 10 Index</option>
-    <option value="Volatility 25 Index">Volatility 25 Index</option>
-    <option value="Volatility 50 Index">Volatility 50 Index</option>
-    <option value="Volatility 75 Index">Volatility 75 Index</option>
-    <option value="Volatility 100 Index">Volatility 100 Index</option>
-    <option value="Crash 300 Index">Crash 300 Index</option>
-    <option value="Crash 500 Index">Crash 500 Index</option>
-    <option value="Crash 1000 Index">Crash 1000 Index</option>
-    <option value="Boom 300 Index">Boom 300 Index</option>
-    <option value="Boom 500 Index">Boom 500 Index</option>
-    <option value="Boom 1000 Index">Boom 1000 Index</option>
-    <option value="Step Index">Step Index</option>
-  </optgroup>
-  <optgroup label="── Forex">
-    <option value="EUR/USD">EUR/USD</option>
-    <option value="GBP/USD">GBP/USD</option>
-    <option value="USD/JPY">USD/JPY</option>
-    <option value="AUD/USD">AUD/USD</option>
-    <option value="USD/CHF">USD/CHF</option>
-    <option value="NZD/USD">NZD/USD</option>
-    <option value="EUR/GBP">EUR/GBP</option>
-    <option value="EUR/JPY">EUR/JPY</option>
-  </optgroup>
-  <optgroup label="── Crypto">
-    <option value="BTC/USD">BTC/USD</option>
-    <option value="ETH/USD">ETH/USD</option>
-    <option value="LTC/USD">LTC/USD</option>
-    <option value="XRP/USD">XRP/USD</option>
-    <option value="SOL/USD">SOL/USD</option>
-    <option value="BNB/USD">BNB/USD</option>
-  </optgroup>
-  <optgroup label="── Commodities">
-    <option value="GOLD">GOLD</option>
-    <option value="SILVER">SILVER</option>
-    <option value="OIL">OIL</option>
-    <option value="NATURAL GAS">NATURAL GAS</option>
-    <option value="COPPER">COPPER</option>
-    <option value="PLATINUM">PLATINUM</option>
-  </optgroup>
-</select>
-    </div>
+
     <!-- TRADE CATEGORY -->
     <div class="rp-section">
       <div class="rp-label">TRADE TYPE</div>
@@ -474,7 +387,7 @@
       </div>
     </div>
 
-    <!-- EXPIRY (shown for binary only) -->
+    <!-- EXPIRY (binary only) -->
     <div class="rp-section" id="expiry-section">
       <div class="rp-label">EXPIRY TIME</div>
       <div class="expiry-grid">
@@ -485,12 +398,10 @@
       </div>
     </div>
 
-    <!-- DIGIT SELECTOR (shown for matches/overunder) -->
+    <!-- DIGIT SELECTOR -->
     <div class="rp-section" id="digit-select-section" style="display:none">
-      <div class="rp-label" id="digit-select-label">SELECT DIGIT</div>
-      <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:0.35rem" id="digit-select-grid">
-        <!-- filled by JS -->
-      </div>
+      <div class="rp-label" id="digit-select-label">SELECT DIGIT (0–9)</div>
+      <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:0.35rem" id="digit-select-grid"></div>
     </div>
 
     <!-- STAKE -->
@@ -522,10 +433,10 @@
       </div>
     </div>
 
-    <!-- TRADE BUTTONS (dynamic) -->
-    <div class="rp-section" id="trade-btn-section">
-      <!-- filled by JS based on trade category -->
-    </div>
+    <!-- TRADE BUTTONS -->
+    <div class="rp-section" id="trade-btn-section"></div>
+
+    <!-- STATS -->
     <div class="rp-section">
       <div class="rp-label">YOUR STATS</div>
       <div class="stats-row">
@@ -543,44 +454,67 @@
   <div class="toast-msg"   id="toast-msg"></div>
 </div>
 
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script src="../js/api.js"></script>
+<script src="../js/api.js"></script>
 <script>
   if (!localStorage.getItem('token')) window.location.href = '/pages/login.html';
 
   let user          = JSON.parse(localStorage.getItem('user') || '{}');
-  let currentAsset  = 'EUR/USD';
+  let currentAsset  = 'Volatility 10 (1s) Index';
   let currentExpiry = 30;
   let currentStake  = 5;
   let isDemoMode    = false;
   let demoBalance   = 10000;
   const DEMO_START  = 10000;
-  let chartType     = 'line'; // line | mountain | candle
+  let chartType     = 'line';
+  let tradeCategory = 'binary';
+  let selectedDigit = 5;
 
-  const ASSETS = {
-    'EUR/USD':       { base:1.08450,  type:'forex',     emoji:'💱' },
-    'GBP/USD':       { base:1.26780,  type:'forex',     emoji:'💱' },
-    'BTC/USD':       { base:67450,    type:'crypto',    emoji:'₿'  },
-    'ETH/USD':       { base:3520,     type:'crypto',    emoji:'💎' },
-    'GOLD':          { base:2345.5,   type:'commodity', emoji:'🥇' },
-    'OIL':           { base:82.30,    type:'commodity', emoji:'🛢'  },
-    'Volatility 75': { base:9351.77,  type:'synthetic', emoji:'📊' },
-    'Volatility 10': { base:1245.50,  type:'synthetic', emoji:'📊' },
+  const SYNTHETIC_ASSET_NAMES = [
+    'Volatility 10 (1s) Index','Volatility 15 (1s) Index','Volatility 25 (1s) Index',
+    'Volatility 30 (1s) Index','Volatility 50 (1s) Index','Volatility 75 (1s) Index',
+    'Volatility 90 (1s) Index','Volatility 100 (1s) Index',
+    'Volatility 10 Index','Volatility 25 Index','Volatility 50 Index',
+    'Volatility 75 Index','Volatility 100 Index',
+  ];
+
+  const ASSET_CATEGORIES = {
+    synthetic: { label: 'Volatility Indices', assets: [
+      'Volatility 10 (1s) Index','Volatility 15 (1s) Index','Volatility 25 (1s) Index',
+      'Volatility 30 (1s) Index','Volatility 50 (1s) Index','Volatility 75 (1s) Index',
+      'Volatility 90 (1s) Index','Volatility 100 (1s) Index',
+      'Volatility 10 Index','Volatility 25 Index','Volatility 50 Index',
+      'Volatility 75 Index','Volatility 100 Index',
+    ]},
   };
+
+  const BASE_PRICES = {
+    'Volatility 10 (1s) Index':1245.50,'Volatility 15 (1s) Index':1520.30,
+    'Volatility 25 (1s) Index':2340.10,'Volatility 30 (1s) Index':3100.75,
+    'Volatility 50 (1s) Index':5420.30,'Volatility 75 (1s) Index':9351.77,
+    'Volatility 90 (1s) Index':11240.60,'Volatility 100 (1s) Index':13580.20,
+    'Volatility 10 Index':1180.20,'Volatility 25 Index':2180.50,
+    'Volatility 50 Index':5120.80,'Volatility 75 Index':8920.40,'Volatility 100 Index':12840.90,
+  };
+
+  const ASSETS = {};
+  SYNTHETIC_ASSET_NAMES.forEach(name => {
+    ASSETS[name] = { base: BASE_PRICES[name] || 1000, type: 'synthetic', emoji: '📊' };
+  });
 
   /* ── CHART ── */
   let chartCtx, chartData = [], maxPoints = 120;
   let chartPrice = ASSETS[currentAsset].base;
-  let tickTimes  = [], digitCounts = Array(10).fill(0), digitTotal = 0;
-  let zoomLevel  = 1;
+  let tickTimes = [], digitCounts = Array(10).fill(0), digitTotal = 0;
+  let zoomLevel = 1;
 
   function initChart() {
     const canvas = document.getElementById('priceChart');
-    const wrap   = canvas.parentElement;
-    canvas.width  = wrap.clientWidth;
+    const wrap = canvas.parentElement;
+    canvas.width = wrap.clientWidth;
     canvas.height = wrap.clientHeight;
     chartCtx = canvas.getContext('2d');
     let p = chartPrice;
-    for (let i=0; i<maxPoints; i++) { p=p*(1+(Math.random()-0.499)*0.0008); chartData.push(p); }
+    for (let i = 0; i < maxPoints; i++) { p = p*(1+(Math.random()-0.499)*0.0008); chartData.push(p); }
     setInterval(tickChart, 800);
     renderChart();
     window.addEventListener('resize', () => { canvas.width=wrap.clientWidth; canvas.height=wrap.clientHeight; renderChart(); });
@@ -590,18 +524,17 @@
     chartPrice = chartPrice*(1+(Math.random()-0.499)*0.0006);
     chartData.push(chartPrice);
     if (chartData.length > maxPoints) chartData.shift();
-    const now = new Date();
-    const ts  = now.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false});
+    const ts = new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false});
     tickTimes.push(ts);
     if (tickTimes.length > maxPoints) tickTimes.shift();
     updateXAxis();
     updateDigits(chartPrice);
-    const base   = ASSETS[currentAsset].base;
+    const base = ASSETS[currentAsset]?.base || chartPrice;
     const change = (chartPrice - base) / base * 100;
-    document.getElementById('tb-price').textContent = fmtPrice(chartPrice);
+    document.getElementById('tb-price').textContent = chartPrice.toFixed(2);
     const chEl = document.getElementById('tb-change');
     chEl.textContent = (change>=0?'+':'')+change.toFixed(3)+'%';
-    chEl.className   = 'asset-change '+(change>=0?'up':'down');
+    chEl.className = 'asset-change '+(change>=0?'up':'down');
     requestAnimationFrame(renderChart);
   }
 
@@ -616,13 +549,12 @@
     const toX = i => pad.left + i*(iW/(chartData.length-1));
     const toY = v => pad.top + iH - ((v-min)/range)*iH;
 
-    // Grid
     for (let i=0; i<=5; i++) {
       const y = pad.top+(iH/5)*i;
       chartCtx.strokeStyle='rgba(255,255,255,0.04)'; chartCtx.lineWidth=1;
       chartCtx.beginPath(); chartCtx.moveTo(pad.left,y); chartCtx.lineTo(W-pad.right,y); chartCtx.stroke();
       chartCtx.fillStyle='#6b7280'; chartCtx.font='10px JetBrains Mono,monospace'; chartCtx.textAlign='left';
-      chartCtx.fillText(fmtPrice(max-(range/5)*i), W-pad.right+5, y+4);
+      chartCtx.fillText((max-(range/5)*i).toFixed(2), W-pad.right+5, y+4);
     }
 
     if (chartType === 'candle') {
@@ -634,9 +566,8 @@
       grouped.forEach((bar, idx) => {
         const x = pad.left + idx*(iW/(grouped.length-1||1));
         const bull = bar.c >= bar.o;
-        const col  = bull ? '#10b981' : '#ef4444';
-        chartCtx.strokeStyle = col; chartCtx.fillStyle = col;
-        chartCtx.lineWidth = 1;
+        const col = bull ? '#10b981' : '#ef4444';
+        chartCtx.strokeStyle = col; chartCtx.fillStyle = col; chartCtx.lineWidth = 1;
         chartCtx.beginPath(); chartCtx.moveTo(x, toY(bar.h)); chartCtx.lineTo(x, toY(bar.l)); chartCtx.stroke();
         const top = toY(Math.max(bar.o, bar.c)), bot = toY(Math.min(bar.o, bar.c));
         chartCtx.fillRect(x - barW/2, top, barW, Math.max(1, bot-top));
@@ -661,15 +592,9 @@
     chartCtx.fillStyle='#10b981';
     chartCtx.beginPath(); chartCtx.roundRect(W-pad.right+2,curY-10,68,20,4); chartCtx.fill();
     chartCtx.fillStyle='#000'; chartCtx.font='bold 10px JetBrains Mono,monospace'; chartCtx.textAlign='center';
-    chartCtx.fillText(fmtPrice(chartData[chartData.length-1]), W-pad.right+36, curY+4);
+    chartCtx.fillText(chartData[chartData.length-1].toFixed(2), W-pad.right+36, curY+4);
   }
 
-  function fmtPrice(p) {
-    if (['BTC/USD','ETH/USD','GOLD','OIL','Volatility 75','Volatility 10'].includes(currentAsset)) return p.toFixed(2);
-    return p.toFixed(5);
-  }
-
-  /* ── CHART TYPE ── */
   function setChartType(type, btn) {
     chartType = type;
     document.querySelectorAll('.chart-tool-btn[id^="tool-"]').forEach(b => b.classList.remove('active'));
@@ -677,7 +602,6 @@
     renderChart();
   }
 
-  /* ── ZOOM ── */
   function chartZoom(factor) {
     zoomLevel = Math.max(0.3, Math.min(3, zoomLevel * factor));
     maxPoints = Math.round(120 / zoomLevel);
@@ -686,20 +610,17 @@
   }
   function chartReset() { zoomLevel=1; maxPoints=120; renderChart(); }
 
-  /* ── DOWNLOAD ── */
   function downloadChart() {
     const canvas = document.getElementById('priceChart');
     const a = document.createElement('a');
-    a.download = 'lohan-chart-'+currentAsset.replace('/','_')+'.png';
+    a.download = 'lohan-chart-'+currentAsset.replace(/ /g,'_')+'.png';
     a.href = canvas.toDataURL();
     a.click();
   }
 
-  /* ── X-AXIS ── */
   function updateXAxis() {
     const el = document.getElementById('x-axis');
-    const W  = el.clientWidth;
-    const n  = tickTimes.length;
+    const W = el.clientWidth, n = tickTimes.length;
     if (!n) return;
     const step = Math.max(1, Math.floor(n/6));
     let html = '';
@@ -710,52 +631,25 @@
     el.innerHTML = html;
   }
 
-  /* ── DIGIT BUBBLES ── */
   function updateDigits(price) {
     const lastDigit = Math.round(price*10)%10;
     digitCounts[lastDigit]++; digitTotal++;
     const el = document.getElementById('digit-row');
-
-    // Find the single highest and lowest frequency digit
-    // If tie, pick the first occurrence for high, last for low
-    const maxCount = Math.max(...digitCounts);
-    const minCount = Math.min(...digitCounts);
-
-    // Get index of highest count digit (skip current last digit for tie-breaking)
+    const maxCount = Math.max(...digitCounts), minCount = Math.min(...digitCounts);
     let highDigit = -1, lowDigit = -1;
     if (digitTotal >= 10) {
-      // highest: first digit with max count
       highDigit = digitCounts.indexOf(maxCount);
-      // lowest: first digit with min count (prefer one that isn't current)
-      for (let i = 0; i < 10; i++) {
-        if (digitCounts[i] === minCount) { lowDigit = i; break; }
-      }
+      for (let i=0; i<10; i++) { if (digitCounts[i]===minCount) { lowDigit=i; break; } }
     }
-
     el.innerHTML = digitCounts.map((c,d) => {
-      const pct        = digitTotal ? ((c/digitTotal)*100).toFixed(1) : '0.0';
-      const isCurrent  = (d === lastDigit);
-      const isHigh     = (d === highDigit && d !== lastDigit);
-      const isLow      = (d === lowDigit  && d !== lastDigit && d !== highDigit);
-
-      const borderColor = isCurrent ? '#f59e0b'
-                        : isHigh    ? '#10b981'
-                        : isLow     ? '#ef4444'
-                        : 'rgba(255,255,255,0.12)';
-      const bgColor     = isCurrent ? 'rgba(245,158,11,0.15)'
-                        : isHigh    ? 'rgba(16,185,129,0.15)'
-                        : isLow     ? 'rgba(239,68,68,0.15)'
-                        : 'rgba(255,255,255,0.03)';
-      const textColor   = isCurrent ? '#f59e0b'
-                        : isHigh    ? '#10b981'
-                        : isLow     ? '#ef4444'
-                        : '#d1d5db';
-
+      const pct = digitTotal ? ((c/digitTotal)*100).toFixed(1) : '0.0';
+      const isCurrent = (d===lastDigit), isHigh = (d===highDigit&&d!==lastDigit), isLow = (d===lowDigit&&d!==lastDigit&&d!==highDigit);
+      const borderColor = isCurrent?'#f59e0b':isHigh?'#10b981':isLow?'#ef4444':'rgba(255,255,255,0.12)';
+      const bgColor = isCurrent?'rgba(245,158,11,0.15)':isHigh?'rgba(16,185,129,0.15)':isLow?'rgba(239,68,68,0.15)':'rgba(255,255,255,0.03)';
+      const textColor = isCurrent?'#f59e0b':isHigh?'#10b981':isLow?'#ef4444':'#d1d5db';
       return `<div style="display:flex;flex-direction:column;align-items:center;gap:0;min-width:44px;position:relative">
-        <div style="font-size:0.6rem;color:#f59e0b;text-align:center;height:10px;line-height:10px">
-          ${isCurrent ? '▼' : ''}
-        </div>
-        <div style="width:44px;height:44px;border-radius:50%;background:${bgColor};border:2px solid ${borderColor};display:flex;flex-direction:column;align-items:center;justify-content:center;transition:background 0.25s,border-color 0.25s,color 0.25s">
+        <div style="font-size:0.6rem;color:#f59e0b;text-align:center;height:10px;line-height:10px">${isCurrent?'▼':''}</div>
+        <div style="width:44px;height:44px;border-radius:50%;background:${bgColor};border:2px solid ${borderColor};display:flex;flex-direction:column;align-items:center;justify-content:center;transition:all 0.25s">
           <div style="font-weight:800;font-size:0.9rem;color:${textColor};line-height:1">${d}</div>
           <div style="font-size:0.58rem;color:${textColor};font-weight:600;line-height:1;margin-top:1px">${pct}%</div>
         </div>
@@ -763,54 +657,7 @@
     }).join('');
   }
 
-  /* ── ASSET ── */
   /* ── ASSET MODAL ── */
-  const ASSET_CATEGORIES = {
-    forex:     { label:'Forex',       assets:['EUR/USD','GBP/USD','USD/JPY','AUD/USD','USD/CHF','NZD/USD','EUR/GBP','EUR/JPY'] },
-    crypto:    { label:'Crypto',      assets:['BTC/USD','ETH/USD','LTC/USD','XRP/USD','SOL/USD','BNB/USD'] },
-    commodity: { label:'Commodities', assets:['GOLD','SILVER','OIL','NATURAL GAS','COPPER','PLATINUM'] },
-    synthetic: { label:'Synthetic Indices', assets:[
-      'Volatility 10 (1s) Index','Volatility 10 Index',
-      'Volatility 15 (1s) Index',
-      'Volatility 25 (1s) Index','Volatility 25 Index',
-      'Volatility 30 (1s) Index',
-      'Volatility 50 (1s) Index','Volatility 50 Index',
-      'Volatility 75 (1s) Index','Volatility 75 Index',
-      'Volatility 90 (1s) Index',
-      'Volatility 100 (1s) Index','Volatility 100 Index',
-      'Crash 300 Index','Crash 500 Index','Crash 1000 Index',
-      'Boom 300 Index','Boom 500 Index','Boom 1000 Index',
-      'Step Index','Range Break 100 Index','Range Break 200 Index'
-    ]}
-  };
-
-  // Extend ASSETS map with new entries
-  Object.values(ASSET_CATEGORIES).forEach(cat => {
-    cat.assets.forEach(name => {
-      if (!ASSETS[name]) {
-        const type = Object.keys(ASSET_CATEGORIES).find(k => ASSET_CATEGORIES[k].assets.includes(name));
-        const baseMap = {
-          'USD/JPY':149.87,'AUD/USD':0.6520,'USD/CHF':0.9011,'NZD/USD':0.5980,
-          'EUR/GBP':0.8541,'EUR/JPY':161.25,'LTC/USD':82.45,'XRP/USD':0.5231,
-          'SOL/USD':148.20,'BNB/USD':312.50,'SILVER':27.45,'NATURAL GAS':2.31,
-          'COPPER':4.12,'PLATINUM':985.0,
-          'Volatility 10 (1s) Index':1245.50,'Volatility 10 Index':1180.20,
-          'Volatility 15 (1s) Index':1520.30,
-          'Volatility 25 (1s) Index':2340.10,'Volatility 25 Index':2180.50,
-          'Volatility 30 (1s) Index':3100.75,
-          'Volatility 50 (1s) Index':5420.30,'Volatility 50 Index':5120.80,
-          'Volatility 75 (1s) Index':9351.77,'Volatility 75 Index':8920.40,
-          'Volatility 90 (1s) Index':11240.60,
-          'Volatility 100 (1s) Index':13580.20,'Volatility 100 Index':12840.90,
-          'Crash 300 Index':8420.50,'Crash 500 Index':6120.30,'Crash 1000 Index':4850.70,
-          'Boom 300 Index':8980.20,'Boom 500 Index':6540.10,'Boom 1000 Index':5210.40,
-          'Step Index':100.00,'Range Break 100 Index':1250.00,'Range Break 200 Index':2480.00
-        };
-        ASSETS[name] = { base: baseMap[name]||1000, type, emoji: type==='forex'?'💱':type==='crypto'?'₿':type==='commodity'?'🥇':'📊' };
-      }
-    });
-  });
-
   let currentAssetCat = 'all';
   let assetSearchQuery = '';
 
@@ -821,90 +668,52 @@
     renderAssetList();
     setTimeout(()=>document.getElementById('asset-search').focus(),100);
   }
-
-  function closeAssetModal() {
-    document.getElementById('asset-modal').style.display='none';
-  }
+  function closeAssetModal() { document.getElementById('asset-modal').style.display='none'; }
+  function toggleAssetMenu() { openAssetModal(); }
 
   function setAssetCat(cat, el) {
-    currentAssetCat=cat;
+    currentAssetCat = cat;
     document.querySelectorAll('.cat-icon').forEach(e=>e.classList.remove('active'));
     el.classList.add('active');
     renderAssetList();
   }
-
-  function filterAssets(q) {
-    assetSearchQuery=q.toLowerCase();
-    renderAssetList();
-  }
+  function filterAssets(q) { assetSearchQuery=q.toLowerCase(); renderAssetList(); }
 
   function renderAssetList() {
     const container = document.getElementById('asset-modal-list');
     let html = '';
     const cats = currentAssetCat==='all' ? Object.keys(ASSET_CATEGORIES) : [currentAssetCat];
-
     cats.forEach(cat => {
       const catData = ASSET_CATEGORIES[cat];
-      const filtered = catData.assets.filter(name =>
-        !assetSearchQuery || name.toLowerCase().includes(assetSearchQuery)
-      );
+      const filtered = catData.assets.filter(name => !assetSearchQuery || name.toLowerCase().includes(assetSearchQuery));
       if (!filtered.length) return;
-
-      if (currentAssetCat==='all') {
-        html += `<div class="cat-header">${catData.label.toUpperCase()}</div>`;
-      }
-
       filtered.forEach(name => {
         const a = ASSETS[name] || {};
-        const price = (a.base||0);
         const isSelected = name===currentAsset;
-        const priceStr = ['BTC/USD','ETH/USD','LTC/USD','XRP/USD','SOL/USD','BNB/USD'].includes(name)
-          ? price.toFixed(2)
-          : price > 100 ? price.toFixed(2) : price.toFixed(5);
-        html += `<div class="asset-row${isSelected?' selected':''}" onclick="changeAsset('${name.replace(/'/g,"\'")}')">
-          <div class="asset-row-icon">${a.emoji||'📈'}</div>
-          <div>
-            <div class="asset-row-name">${name}</div>
-            <div class="asset-row-sub">${catData.label}</div>
-          </div>
+        html += `<div class="asset-row${isSelected?' selected':''}" onclick="changeAsset('${name.replace(/'/g,"\\'")}')">
+          <div class="asset-row-icon">📊</div>
+          <div><div class="asset-row-name">${name}</div><div class="asset-row-sub">${catData.label}</div></div>
           <div class="asset-row-price">
-            <div class="asset-row-val">${priceStr}</div>
+            <div class="asset-row-val">${(a.base||0).toFixed(2)}</div>
             <div class="asset-row-chg" style="color:var(--accent)">● LIVE</div>
           </div>
         </div>`;
       });
     });
-
     if (!html) html = '<div style="text-align:center;color:var(--muted);padding:2rem;font-size:0.8rem">No markets found</div>';
     container.innerHTML = html;
   }
 
- function changeAsset(asset) {
-  currentAsset = asset;  // ← this must be here
-  chartPrice = ASSETS[asset]?.base || 1.0;
-  chartData = []; tickTimes = []; digitCounts = Array(10).fill(0); digitTotal = 0;
-  let p = chartPrice;
-  for (let i = 0; i < maxPoints; i++) { p = p*(1+(Math.random()-0.499)*0.0008); chartData.push(p); }
-  document.getElementById('tb-asset').textContent = asset;
-
-  // ── ADD THIS BLOCK ──
-  // Sync the right-panel dropdown if the asset exists there
-  const sel = document.getElementById('trade-asset');
-  const exists = [...sel.options].some(o => o.value === asset);
-  if (exists) {
-    sel.value = asset;
-  } else {
-    // Asset is not in dropdown (e.g. Volatility 15 1s) — force update currentAsset anyway
+  function changeAsset(asset) {
     currentAsset = asset;
+    chartPrice = ASSETS[asset]?.base || 1000;
+    chartData = []; tickTimes = []; digitCounts = Array(10).fill(0); digitTotal = 0;
+    let p = chartPrice;
+    for (let i=0; i<maxPoints; i++) { p=p*(1+(Math.random()-0.499)*0.0008); chartData.push(p); }
+    document.getElementById('tb-asset').textContent = asset;
+    closeAssetModal();
+    renderChart();
   }
- 
-
-  closeAssetModal();
-  renderChart();
-}
-
-
-  function toggleAssetMenu() { openAssetModal(); }
 
   document.addEventListener('click', e => {
     if (!e.target.closest('.asset-pill')&&!e.target.closest('#asset-modal>div')) document.getElementById('asset-modal').style.display='none';
@@ -913,23 +722,19 @@
 
   /* ── CONTROLS ── */
   function setTF(btn) { document.querySelectorAll('.tf-btn').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); }
-  function setTradeType(btn) { document.querySelectorAll('.trade-type-btn').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); }
   function setExpiry(sec,el) { currentExpiry=sec; document.querySelectorAll('.exp-btn').forEach(b=>b.classList.remove('active')); el.classList.add('active'); }
   function adjustStake(d) { currentStake=Math.max(1,(parseFloat(document.getElementById('stake-input').value)||0)+d); document.getElementById('stake-input').value=currentStake; updatePayout(); }
   function setStake(v) { currentStake=v; document.getElementById('stake-input').value=v; updatePayout(); }
   function updatePayout() {
     currentStake = parseFloat(document.getElementById('stake-input').value)||0;
-    const rates = { binary:1.0, matches:1.0, evenodd:1.0, overunder:1.0 };
-    const rate  = rates[tradeCategory] || 0.85;
-    document.getElementById('po-stake').textContent  = '$'+currentStake.toFixed(2);
-    document.getElementById('po-total').textContent  = '$'+(currentStake*(1+rate)).toFixed(2);
-    const rateEl = document.getElementById('po-rate');
-    if (rateEl) rateEl.textContent = Math.round(rate*100)+'%';
+    document.getElementById('po-stake').textContent = '$'+currentStake.toFixed(2);
+    document.getElementById('po-total').textContent = '$'+(currentStake*2).toFixed(2);
+    document.getElementById('po-rate').textContent = '100%';
   }
 
   /* ── DEMO / REAL ── */
   function switchMode(mode) {
-    isDemoMode=mode==='demo';
+    isDemoMode = mode==='demo';
     const btnReal=document.getElementById('btn-real'), btnDemo=document.getElementById('btn-demo');
     const chip=document.getElementById('balance-chip'), depBtn=document.getElementById('deposit-nav-btn');
     const banner=document.getElementById('demo-banner'), resetBtn=document.getElementById('reset-demo-btn');
@@ -957,67 +762,118 @@
   }
 
   function updateBalance(bal) {
-    const fmt=Number(bal).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
+    const fmt = Number(bal).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
     document.getElementById('header-balance').textContent=fmt;
     document.getElementById('stat-bal').textContent='$'+fmt;
     if (isDemoMode){demoBalance=bal;document.getElementById('demo-bal-banner').textContent=Number(bal).toLocaleString();}
     else{user.balance=bal;}
   }
 
-  /* ── TRADE ── */
-  const DIGIT_DIRS = ['even','odd','matches','differs','over','under'];
+  /* ── PLACE TRADE (FIXED) ── */
+  async function placeTrade(direction) {
+    if (currentStake < 1) return showToast('Error','Minimum stake is $1.00','error');
+    const bal = isDemoMode ? demoBalance : (user.balance||0);
+    if (currentStake > bal) return showToast('Error','Insufficient balance','error');
 
-/* --- Find this function in your <script> tag --- */
-/* --- Find your placeTrade function and update this section --- */
- async function placeTrade(direction) {
-            console.log(`Attempting to place trade: ${direction}`);
+    // FIX: digit contracts use a fixed 60s duration since there's no expiry picker for them
+    const duration = ['match','differ','even','odd','over','under'].includes(direction)
+      ? 60
+      : currentExpiry;
 
-            if (currentStake < 1) {
-                return showToast('Error', 'Minimum stake is $1.00', 'error');
-            }
+    const payload = {
+      asset:     currentAsset,
+      direction: direction,
+      amount:    currentStake,
+      duration:  duration,
+      isDemo:    isDemoMode,
+    };
 
-            // FIX 1: Ensure duration is in seconds (e.g., 2 -> 120)
-            // Assuming currentExpiry is in minutes if < 15, otherwise it's already in seconds.
-            let finalDuration = currentExpiry;
+    // FIX: only attach digitPrediction when direction actually needs it
+    if (['match','differ','over','under'].includes(direction)) {
+      payload.digitPrediction = selectedDigit;
+    }
 
-            console.log(`Original expiry: ${currentExpiry}, Final duration (seconds): ${finalDuration}`);
+    try {
+      const res = await api.placeTrade(payload);
 
+      // FIX: update balance from server response when available
+      if (isDemoMode) {
+        demoBalance -= currentStake;
+        updateBalance(demoBalance);
+        showToast('Trade Placed 🎮',`${direction.toUpperCase()} · $${currentStake.toFixed(2)} (Demo)`,'demo');
+      } else {
+        if (res.trade && res.balance !== undefined) updateBalance(res.balance);
+        showToast('Trade Placed ✓',`${direction.toUpperCase()} · $${currentStake.toFixed(2)}`);
+      }
 
-            const payload = {
-                asset: currentAsset,
-                // Fixes 'differs' vs 'differ' (backend might expect 'differ')
-                direction: direction === 'differs' ? 'differ' : direction,
-                amount: currentStake,
-                duration: finalDuration,
-                isDemo: isDemoMode,
-                entryPrice: chartPrice
-            };
+      await refreshActiveTrades();
+    } catch(err) {
+      console.error('placeTrade error:', err);
+      showToast('Error', err.message || 'Failed to place trade', 'error');
+    }
+  }
 
+  /* ── TRADE CATEGORIES ── */
+  function setTradeCategory(cat) {
+    tradeCategory = cat;
+    document.querySelectorAll('.trade-cat-btn').forEach(b=>b.classList.remove('active'));
+    document.getElementById('cat-'+cat).classList.add('active');
+    document.getElementById('expiry-section').style.display = cat==='binary' ? 'block' : 'none';
+    const digitSec = document.getElementById('digit-select-section');
+    if (cat==='matches') {
+      digitSec.style.display='block';
+      document.getElementById('digit-select-label').textContent='SELECT DIGIT (0–9)';
+      renderDigitSelector();
+    } else if (cat==='overunder') {
+      digitSec.style.display='block';
+      document.getElementById('digit-select-label').textContent='BARRIER DIGIT (0–9)';
+      renderDigitSelector();
+    } else {
+      digitSec.style.display='none';
+    }
+    updatePayout();
+    renderTradeButtons();
+  }
 
-            // FIX 2: Backend validation expects 'digitPrediction', not 'targetDigit'
-            // Ensure selectedDigit is defined (0-9) for digit trades
-            if (['matche', 'differ'].includes(payload.direction)) {
-                if (typeof selectedDigit === 'undefined' || selectedDigit === null) {
-                    // Fallback or explicit error if selectedDigit is not set
-                    return showToast('Error', 'Please select a digit for this trade type.', 'error');
-                }
-                payload.digitPrediction = selectedDigit;
-            }
+  function renderDigitSelector() {
+    const grid = document.getElementById('digit-select-grid');
+    let html = '';
+    for (let i=0; i<=9; i++) {
+      html += `<div class="digit-sel-btn${i===selectedDigit?' active':''}" onclick="selectDigit(${i})">${i}</div>`;
+    }
+    grid.innerHTML = html;
+  }
 
-            console.log("Trade Payload:", payload);
+  function selectDigit(d) {
+    selectedDigit = d;
+    document.querySelectorAll('.digit-sel-btn').forEach((b,i)=>b.classList.toggle('active',i===d));
+    renderTradeButtons();
+  }
 
-            try {
-                const res = await api.placeTrade(payload);
-                // ... success logic ...
-                console.log("Trade API response:", res);
-                showToast('Success', 'Trade placed successfully', 'success');
-                await refreshActiveTrades();
-            } catch (err) {
-                // This will now show you the specific validation error from the server
-                showToast('Error', err.message || 'An unknown error occurred.', 'error');
-                console.error("Full Error Response:", err);
-            }
-        }
+  function renderTradeButtons() {
+    const sec = document.getElementById('trade-btn-section');
+    if (tradeCategory==='binary') {
+      sec.innerHTML=`<div class="trade-btns">
+        <button class="btn-call" onclick="placeTrade('call')"><span>▲ RISE</span><span class="btn-sub">Higher at expiry</span></button>
+        <button class="btn-put"  onclick="placeTrade('put')"><span>▼ FALL</span><span class="btn-sub">Lower at expiry</span></button>
+      </div>`;
+    } else if (tradeCategory==='matches') {
+      sec.innerHTML=`<div class="trade-btns">
+        <button class="btn-call" onclick="placeTrade('match')"  style="background:#10b981"><span>🎯 MATCHES</span><span class="btn-sub">Last digit = ${selectedDigit}</span></button>
+        <button class="btn-put"  onclick="placeTrade('differ')" style="background:#ef4444"><span>✗ DIFFERS</span><span class="btn-sub">Last digit ≠ ${selectedDigit}</span></button>
+      </div>`;
+    } else if (tradeCategory==='evenodd') {
+      sec.innerHTML=`<div class="trade-btns">
+        <button class="btn-call" onclick="placeTrade('even')" style="background:#3b82f6"><span>⚖ EVEN</span><span class="btn-sub">0, 2, 4, 6, 8</span></button>
+        <button class="btn-put"  onclick="placeTrade('odd')"  style="background:#8b5cf6"><span>⚡ ODD</span><span class="btn-sub">1, 3, 5, 7, 9</span></button>
+      </div>`;
+    } else if (tradeCategory==='overunder') {
+      sec.innerHTML=`<div class="trade-btns">
+        <button class="btn-call" onclick="placeTrade('over')"  style="background:#10b981"><span>▲ OVER</span><span class="btn-sub">Last digit > ${selectedDigit}</span></button>
+        <button class="btn-put"  onclick="placeTrade('under')" style="background:#ef4444"><span>▼ UNDER</span><span class="btn-sub">Last digit < ${selectedDigit}</span></button>
+      </div>`;
+    }
+  }
 
   /* ── POSITIONS ── */
   function switchPosTab(tab) {
@@ -1026,37 +882,58 @@
       document.getElementById('panel-'+t).style.display=t===tab?(t==='open'?'flex':'block'):'none';
     });
     if (tab==='closed') loadClosedTrades();
-    if (tab==='txns')   loadTxns();
+    if (tab==='txns') loadTxns();
   }
 
+  // FIX: use api.getActiveTrades(isDemoMode) which sends correct ?isDemo= param
   async function refreshActiveTrades() {
-    try { const trades=await api.get('/trades/active?demo='+isDemoMode); renderOpenTrades(trades); } catch(e){}
+    try {
+      const res = await api.getActiveTrades(isDemoMode);
+      renderOpenTrades(res.trades || []);
+    } catch(e) {
+      console.error('refreshActiveTrades error:', e);
+    }
   }
 
   function renderOpenTrades(trades) {
-    const n=trades.length;
+    if (!trades||!Array.isArray(trades)) trades=[];
+    const n = trades.length;
     document.getElementById('open-count').textContent=n;
     document.getElementById('footer-count').textContent=n+' open position'+(n!==1?'s':'');
     const noMsg=document.getElementById('no-pos-msg'), cont=document.getElementById('active-trades-container');
-    if (!n){noMsg.style.display='flex';cont.innerHTML='';return;}
+    if (!n) { noMsg.style.display='flex'; cont.innerHTML=''; return; }
     noMsg.style.display='none';
     cont.innerHTML=trades.map(t=>{
       const rem=Math.max(0,Math.ceil((new Date(t.expiryTime)-Date.now())/1000));
-      const min=Math.floor(rem/60),sec=rem%60;
+      const min=Math.floor(rem/60), sec=rem%60;
       const timer=rem<60?`${sec}s`:`${min}:${sec.toString().padStart(2,'0')}`;
+      const dirLabel=t.direction==='call'?'▲ UP':t.direction==='put'?'▼ DOWN':
+        t.direction==='even'?'⚖ EVEN':t.direction==='odd'?'⚡ ODD':
+        t.direction==='match'?`🎯 MATCH ${t.digitPrediction}`:
+        t.direction==='differ'?`✗ DIFFER ${t.digitPrediction}`:
+        t.direction==='over'?`▲ OVER ${t.digitPrediction}`:
+        t.direction==='under'?`▼ UNDER ${t.digitPrediction}`:t.direction.toUpperCase();
       return `<div class="trade-item-small">
-        <div class="ti-header"><span class="ti-asset">${t.asset}${t.isDemo?'<span class="demo-tag">DEMO</span>':''}</span><span class="ti-dir ${t.direction}">${t.direction==='call'?'▲ UP':'▼ DOWN'}</span></div>
+        <div class="ti-header">
+          <span class="ti-asset">${t.asset}${t.isDemo?'<span class="demo-tag">DEMO</span>':''}</span>
+          <span class="ti-dir" style="background:var(--accent-dim);color:var(--accent)">${dirLabel}</span>
+        </div>
         <div class="ti-row"><span>$${Number(t.amount).toFixed(2)}</span><span class="ti-timer">${timer}</span></div>
-        <div class="ti-row" style="margin-top:0.18rem"><span>@ ${Number(t.entryPrice).toFixed(5)}</span><span style="color:var(--accent);font-size:0.68rem">+$${(t.amount*0.85).toFixed(2)}</span></div>
+        <div class="ti-row" style="margin-top:0.18rem">
+          <span>@ ${Number(t.entryPrice).toFixed(2)}</span>
+          <span style="color:var(--accent);font-size:0.68rem">+$${(t.amount*1.0).toFixed(2)}</span>
+        </div>
       </div>`;
     }).join('');
   }
 
+  // FIX: use api.getTradeHistory(isDemoMode)
   async function loadClosedTrades() {
     try {
-      const trades=await api.get('/trades/history?demo='+isDemoMode);
-      const el=document.getElementById('closed-container');
-      if (!trades.length){el.innerHTML='<div style="text-align:center;color:var(--muted);padding:2rem;font-size:0.78rem">No closed trades</div>';return;}
+      const res = await api.getTradeHistory(isDemoMode);
+      const trades = res.trades||[];
+      const el = document.getElementById('closed-container');
+      if (!trades.length) { el.innerHTML='<div style="text-align:center;color:var(--muted);padding:2rem;font-size:0.78rem">No closed trades</div>'; return; }
       el.innerHTML=trades.slice(0,25).map(t=>`
         <div style="padding:0.6rem 0.85rem;border-bottom:1px solid var(--border)">
           <div style="display:flex;justify-content:space-between;margin-bottom:0.22rem">
@@ -1068,14 +945,15 @@
             <span style="color:${t.profit>=0?'var(--accent)':'var(--red)'}">${t.profit>=0?'+':''}$${Math.abs(t.profit).toFixed(2)}</span>
           </div>
         </div>`).join('');
-    } catch(e){}
+    } catch(e) { console.error('loadClosedTrades error:', e); }
   }
 
   async function loadTxns() {
     try {
-      const txns=await api.getTransactions();
-      const el=document.getElementById('txns-container');
-      if (!txns.length){el.innerHTML='<div style="text-align:center;color:var(--muted);padding:2rem;font-size:0.78rem">No transactions</div>';return;}
+      const res = await api.getTransactions();
+      const txns = Array.isArray(res) ? res : (res.transactions||[]);
+      const el = document.getElementById('txns-container');
+      if (!txns.length) { el.innerHTML='<div style="text-align:center;color:var(--muted);padding:2rem;font-size:0.78rem">No transactions</div>'; return; }
       el.innerHTML=txns.slice(0,20).map(t=>`
         <div style="padding:0.6rem 0.85rem;border-bottom:1px solid var(--border)">
           <div style="display:flex;justify-content:space-between;margin-bottom:0.2rem">
@@ -1083,25 +961,28 @@
             <span style="font-size:0.73rem;font-weight:700;color:${t.type==='deposit'?'var(--accent)':'var(--red)'}">$${Math.abs(t.amount).toFixed(2)}</span>
           </div>
           <div style="display:flex;justify-content:space-between;font-size:0.68rem;color:var(--muted)">
-            <span>${t.method}</span><span style="color:${t.status==='completed'?'var(--accent)':'var(--amber)'}">${t.status}</span>
+            <span>${t.method||''}</span><span style="color:${t.status==='completed'?'var(--accent)':'var(--amber)'}">${t.status}</span>
           </div>
         </div>`).join('');
-    } catch(e){}
+    } catch(e) { console.error('loadTxns error:', e); }
   }
 
   /* ── STATS ── */
   async function loadStats() {
     try {
-      const data=await api.getStats();
-      const s=data.stats||{};
-      const total=(s.winCount||0)+(s.lossCount||0);
-      const wr=total>0?Math.round((s.winCount/total)*100):0;
+      const data = await api.getStats();
+      const s = data.stats||{};
+      const total = (s.winCount||0)+(s.lossCount||0);
+      const wr = total>0?Math.round((s.winCount/total)*100):0;
       document.getElementById('stat-wr').textContent=wr+'%';
       document.getElementById('stat-total').textContent=s.totalTrades||0;
-      const pnl=data.todayPnL||0;
+      const pnl = data.todayPnL||0;
       document.getElementById('stat-pnl').textContent=(pnl>=0?'+$':'-$')+Math.abs(pnl).toFixed(2);
       document.getElementById('stat-pnl').style.color=pnl>=0?'var(--accent)':'var(--red)';
-    } catch(e){}
+    } catch(e) {
+      // stats endpoint may not exist yet — fail silently
+      console.warn('loadStats failed (endpoint may not exist):', e.message);
+    }
   }
 
   /* ── DROPDOWNS ── */
@@ -1131,133 +1012,42 @@
     setTimeout(()=>t.classList.remove('show'),3500);
   }
 
-  /* ── TRADE CATEGORIES ── */
-  let tradeCategory = 'binary'; // binary | matches | evenodd | overunder
-  let selectedDigit = 5;
-
-  function setTradeCategory(cat) {
-    tradeCategory = cat;
-    // Update active button
-    document.querySelectorAll('.trade-cat-btn').forEach(b => b.classList.remove('active'));
-    document.getElementById('cat-' + cat).classList.add('active');
-    // Show/hide expiry
-    document.getElementById('expiry-section').style.display = cat === 'binary' ? 'block' : 'none';
-    // Show/hide digit selector
-    const digitSec = document.getElementById('digit-select-section');
-    if (cat === 'matches') {
-      digitSec.style.display = 'block';
-      document.getElementById('digit-select-label').textContent = 'SELECT DIGIT (0–9)';
-      renderDigitSelector(0, 9);
-    } else if (cat === 'overunder') {
-      digitSec.style.display = 'block';
-      document.getElementById('digit-select-label').textContent = 'BARRIER DIGIT';
-      renderDigitSelector(0, 9);
-    } else {
-      digitSec.style.display = 'none';
-    }
-    // Update payout rate
-    const rates = { binary:100, matches:100, evenodd:100, overunder:100 };
-    const rate = rates[cat];
-    document.getElementById('po-rate').textContent = rate + '%';
-    updatePayout();
-    renderTradeButtons();
-  }
-
-  function renderDigitSelector(min, max) {
-    const grid = document.getElementById('digit-select-grid');
-    let html = '';
-    for (let i = min; i <= max; i++) {
-      html += `<div class="digit-sel-btn${i===selectedDigit?' active':''}" onclick="selectDigit(${i})">${i}</div>`;
-    }
-    grid.innerHTML = html;
-  }
-
-  function selectDigit(d) {
-    selectedDigit = d;
-    document.querySelectorAll('.digit-sel-btn').forEach((b,i) => b.classList.toggle('active', i===d));
-    renderTradeButtons();
-  }
-
-  function renderTradeButtons() {
-    const sec = document.getElementById('trade-btn-section');
-    if (tradeCategory === 'binary') {
-      sec.innerHTML = `<div class="trade-btns">
-        <button class="btn-call" onclick="placeTrade('call')"><span>▲ UP</span><span class="btn-sub">Rise / Higher</span></button>
-        <button class="btn-put"  onclick="placeTrade('put')"><span>▼ DOWN</span><span class="btn-sub">Fall / Lower</span></button>
-      </div>`;
-    } else if (tradeCategory === 'evenodd') {
-      sec.innerHTML = `<div class="trade-btns">
-        <button class="btn-call" onclick="placeTrade('even')" style="background:#3b82f6">
-          <span>⚖ EVEN</span><span class="btn-sub">0, 2, 4, 6, 8</span>
-        </button>
-        <button class="btn-put" onclick="placeTrade('odd')" style="background:#8b5cf6">
-          <span>⚡ ODD</span><span class="btn-sub">1, 3, 5, 7, 9</span>
-        </button>
-      </div>`;
-  } else if (tradeCategory === 'matches') {
-      sec.innerHTML = `<div class="trade-btns">
-        <button class="btn-call" onclick="placeTrade('match')" style="background:#10b981">
-          <span>🎯 MATCH</span><span class="btn-sub">Last digit = ${selectedDigit}</span>
-        </button>
-        <button class="btn-put" onclick="placeTrade('differ')" style="background:#ef4444">
-          <span>✗ DIFFER</span><span class="btn-sub">Last digit ≠ ${selectedDigit}</span>
-        </button>
-      </div>`;
-      // ^ FIXED: Changed 'differs' to 'differ' to match the backend
-    } else if (tradeCategory === 'overunder') {
-      sec.innerHTML = `<div class="trade-btns">
-        <button class="btn-call" onclick="placeTrade('over')" style="background:#10b981">
-          <span>▲ OVER</span><span class="btn-sub">Last digit > ${selectedDigit}</span>
-        </button>
-        <button class="btn-put" onclick="placeTrade('under')" style="background:#ef4444">
-          <span>▼ UNDER</span><span class="btn-sub">Last digit < ${selectedDigit}</span>
-        </button>
-      </div>`;
-    }
-
-    
-  }
-
   /* ── LOGOUT ── */
-  function logout(){localStorage.removeItem('token');localStorage.removeItem('user');window.location.href='/pages/login.html';}
+  function logout() { localStorage.removeItem('token'); localStorage.removeItem('user'); window.location.href='/pages/login.html'; }
 
   /* ── INIT ── */
   async function init() {
-    // Always show 0 immediately — never trust localStorage balance
     updateBalance(0);
     renderTradeButtons();
     updatePayout();
     updateDigits(chartPrice);
     initChart();
 
-    // Fetch real balance from server
     try {
       const profile = await api.get('/auth/me');
       user = { ...user, ...profile };
       localStorage.setItem('user', JSON.stringify(user));
-      if (!isDemoMode) updateBalance(user.balance ?? 0);
+      if (!isDemoMode) updateBalance(user.balance??0);
     } catch(e) {
-      // If fetch fails, keep showing 0 for real account
       if (!isDemoMode) updateBalance(0);
     }
 
     await loadStats();
     await refreshActiveTrades();
-    const name=((user.firstName||'')+' '+(user.lastName||'')).trim()||'User';
-    const email=user.email||'user@example.com';
+
+    const name = ((user.firstName||'')+' '+(user.lastName||'')).trim()||'User';
+    const email = user.email||'user@example.com';
     document.getElementById('pd-name').textContent=name;
     document.getElementById('pd-email').textContent=email.replace(/(.{2})(.*)(@.*)/,'$1***$3');
     document.getElementById('avatar-btn').textContent=(user.firstName?.[0]||'U').toUpperCase();
-    setInterval(refreshActiveTrades,3000);
-    setInterval(loadStats,30000);
+
+    // FIX: pass isDemoMode correctly to polling intervals
+    setInterval(() => refreshActiveTrades(), 3000);
+    setInterval(loadStats, 30000);
   }
 
   /* ── MODALS ── */
-  function openModal(id) {
-    document.querySelectorAll('.modal-overlay').forEach(m=>m.classList.remove('open'));
-    document.getElementById(id).classList.add('open');
-    document.querySelectorAll('.dropdown').forEach(d=>d.classList.remove('open'));
-  }
+  function openModal(id) { document.querySelectorAll('.modal-overlay').forEach(m=>m.classList.remove('open')); document.getElementById(id).classList.add('open'); document.querySelectorAll('.dropdown').forEach(d=>d.classList.remove('open')); }
   function closeModal(id) { document.getElementById(id).classList.remove('open'); }
   document.addEventListener('keydown',e=>{ if(e.key==='Escape') document.querySelectorAll('.modal-overlay').forEach(m=>m.classList.remove('open')); });
 
@@ -1280,7 +1070,6 @@
     } catch(err){showToast('Error',err.message||'Failed to save','error');}
     finally{btn.textContent='Save Changes';btn.disabled=false;}
   }
-
   async function savePassword() {
     const cur=document.getElementById('cp-current').value,np=document.getElementById('cp-new').value,cf=document.getElementById('cp-confirm').value;
     if(!cur||!np||!cf) return showToast('Error','All fields required','error');
@@ -1295,7 +1084,6 @@
     } catch(err){showToast('Error',err.message||'Failed','error');}
     finally{btn.textContent='Change Password';btn.disabled=false;}
   }
-
   let twoFAEnabled=false;
   function toggle2FA() {
     twoFAEnabled=!twoFAEnabled;
@@ -1304,7 +1092,6 @@
     else{btn.textContent='Enable 2FA';btn.style.background='';status.textContent='❌ Disabled';status.style.color='var(--red)';}
     showToast('2FA '+(twoFAEnabled?'Enabled':'Disabled'),'Two-factor authentication '+(twoFAEnabled?'activated':'deactivated'));
   }
-
   function handleIdUpload(input) {
     const file=input.files[0]; if(!file) return;
     document.getElementById('vi-filename').textContent=file.name;
@@ -1338,7 +1125,6 @@
   .modal-btn { width:100%;background:var(--gradient);border:none;color:#fff;padding:0.85rem;border-radius:9px;font-size:0.9rem;font-weight:700;cursor:pointer;margin-top:0.5rem;transition:all 0.2s; }
   .modal-btn:hover { transform:translateY(-1px);box-shadow:0 6px 20px rgba(16,185,129,0.3); }
   .modal-btn:disabled { opacity:0.5;cursor:not-allowed;transform:none; }
-  .modal-btn.red { background:linear-gradient(135deg,var(--red),#dc2626); }
   .tfa-card { background:var(--bg3);border-radius:10px;padding:1.2rem;margin-bottom:1rem;display:flex;justify-content:space-between;align-items:center; }
   .tfa-info { font-size:0.82rem;color:var(--text2);line-height:1.5; }
   .tfa-info strong { color:var(--text);display:block;margin-bottom:0.2rem; }
@@ -1352,28 +1138,13 @@
 <!-- EDIT PROFILE MODAL -->
 <div class="modal-overlay" id="modal-profile">
   <div class="modal-box">
-    <div class="modal-head">
-      <span class="modal-title">👤 Edit Profile</span>
-      <button class="modal-close-btn" onclick="closeModal('modal-profile')">✕</button>
-    </div>
+    <div class="modal-head"><span class="modal-title">👤 Edit Profile</span><button class="modal-close-btn" onclick="closeModal('modal-profile')">✕</button></div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.85rem">
-      <div class="modal-field">
-        <label class="modal-label">FIRST NAME</label>
-        <input class="modal-input" id="ep-firstName" type="text" placeholder="John">
-      </div>
-      <div class="modal-field">
-        <label class="modal-label">LAST NAME</label>
-        <input class="modal-input" id="ep-lastName" type="text" placeholder="Doe">
-      </div>
+      <div class="modal-field"><label class="modal-label">FIRST NAME</label><input class="modal-input" id="ep-firstName" type="text" placeholder="John"></div>
+      <div class="modal-field"><label class="modal-label">LAST NAME</label><input class="modal-input" id="ep-lastName" type="text" placeholder="Doe"></div>
     </div>
-    <div class="modal-field">
-      <label class="modal-label">EMAIL ADDRESS</label>
-      <input class="modal-input" id="ep-email" type="email" readonly>
-    </div>
-    <div class="modal-field">
-      <label class="modal-label">PHONE</label>
-      <input class="modal-input" id="ep-phone" type="tel" placeholder="+1 (555) 000-0000">
-    </div>
+    <div class="modal-field"><label class="modal-label">EMAIL ADDRESS</label><input class="modal-input" id="ep-email" type="email" readonly></div>
+    <div class="modal-field"><label class="modal-label">PHONE</label><input class="modal-input" id="ep-phone" type="tel" placeholder="+254 700 000 000"></div>
     <button class="modal-btn" id="ep-save" onclick="saveProfile()">Save Changes</button>
   </div>
 </div>
@@ -1381,22 +1152,10 @@
 <!-- CHANGE PASSWORD MODAL -->
 <div class="modal-overlay" id="modal-password">
   <div class="modal-box">
-    <div class="modal-head">
-      <span class="modal-title">🔒 Change Password</span>
-      <button class="modal-close-btn" onclick="closeModal('modal-password')">✕</button>
-    </div>
-    <div class="modal-field">
-      <label class="modal-label">CURRENT PASSWORD</label>
-      <input class="modal-input" id="cp-current" type="password" placeholder="Enter current password">
-    </div>
-    <div class="modal-field">
-      <label class="modal-label">NEW PASSWORD</label>
-      <input class="modal-input" id="cp-new" type="password" placeholder="Min 6 characters">
-    </div>
-    <div class="modal-field">
-      <label class="modal-label">CONFIRM NEW PASSWORD</label>
-      <input class="modal-input" id="cp-confirm" type="password" placeholder="Repeat new password">
-    </div>
+    <div class="modal-head"><span class="modal-title">🔒 Change Password</span><button class="modal-close-btn" onclick="closeModal('modal-password')">✕</button></div>
+    <div class="modal-field"><label class="modal-label">CURRENT PASSWORD</label><input class="modal-input" id="cp-current" type="password" placeholder="Enter current password"></div>
+    <div class="modal-field"><label class="modal-label">NEW PASSWORD</label><input class="modal-input" id="cp-new" type="password" placeholder="Min 6 characters"></div>
+    <div class="modal-field"><label class="modal-label">CONFIRM NEW PASSWORD</label><input class="modal-input" id="cp-confirm" type="password" placeholder="Repeat new password"></div>
     <button class="modal-btn" id="cp-save" onclick="savePassword()">Change Password</button>
   </div>
 </div>
@@ -1404,20 +1163,12 @@
 <!-- 2FA MODAL -->
 <div class="modal-overlay" id="modal-2fa">
   <div class="modal-box">
-    <div class="modal-head">
-      <span class="modal-title">🛡️ Two-Factor Auth</span>
-      <button class="modal-close-btn" onclick="closeModal('modal-2fa')">✕</button>
-    </div>
+    <div class="modal-head"><span class="modal-title">🛡️ Two-Factor Auth</span><button class="modal-close-btn" onclick="closeModal('modal-2fa')">✕</button></div>
     <div class="tfa-card">
-      <div class="tfa-info">
-        <strong>Authenticator App</strong>
-        Use Google Authenticator or Authy to generate one-time codes for every login.
-      </div>
+      <div class="tfa-info"><strong>Authenticator App</strong>Use Google Authenticator or Authy to generate one-time codes for every login.</div>
       <span id="tfa-status" style="font-size:0.78rem;color:var(--red);font-weight:600;margin-left:1rem;white-space:nowrap">❌ Disabled</span>
     </div>
-    <div style="font-size:0.78rem;color:var(--muted);margin-bottom:1.25rem;line-height:1.6">
-      Enabling 2FA adds an extra layer of security to your account. You will need your authenticator app every time you log in.
-    </div>
+    <div style="font-size:0.78rem;color:var(--muted);margin-bottom:1.25rem;line-height:1.6">Enabling 2FA adds an extra layer of security. You will need your authenticator app every time you log in.</div>
     <button class="modal-btn" id="tfa-toggle" onclick="toggle2FA()">Enable 2FA</button>
   </div>
 </div>
@@ -1425,13 +1176,8 @@
 <!-- VERIFY IDENTITY MODAL -->
 <div class="modal-overlay" id="modal-verify">
   <div class="modal-box">
-    <div class="modal-head">
-      <span class="modal-title">✅ Verify Identity</span>
-      <button class="modal-close-btn" onclick="closeModal('modal-verify')">✕</button>
-    </div>
-    <div style="font-size:0.8rem;color:var(--muted);margin-bottom:1.25rem;line-height:1.6">
-      Upload a government-issued ID (National ID, Passport, or Driver's License) to verify your account and unlock higher withdrawal limits.
-    </div>
+    <div class="modal-head"><span class="modal-title">✅ Verify Identity</span><button class="modal-close-btn" onclick="closeModal('modal-verify')">✕</button></div>
+    <div style="font-size:0.8rem;color:var(--muted);margin-bottom:1.25rem;line-height:1.6">Upload a government-issued ID to verify your account and unlock higher withdrawal limits.</div>
     <div class="upload-zone" onclick="document.getElementById('vi-file').click()">
       <div class="upload-icon">📄</div>
       <div class="upload-text">Click to upload your ID document<br><span style="font-size:0.72rem">JPG, PNG or PDF · Max 5MB</span></div>
@@ -1440,11 +1186,7 @@
     <input type="file" id="vi-file" accept=".jpg,.jpeg,.png,.pdf" style="display:none" onchange="handleIdUpload(this)">
     <div class="modal-field">
       <label class="modal-label">DOCUMENT TYPE</label>
-      <select class="modal-input" style="cursor:pointer">
-        <option>National ID</option>
-        <option>Passport</option>
-        <option>Driver's License</option>
-      </select>
+      <select class="modal-input" style="cursor:pointer"><option>National ID</option><option>Passport</option><option>Driver's License</option></select>
     </div>
     <button class="modal-btn" id="vi-submit" onclick="submitVerification()" disabled style="opacity:0.5">Submit for Review</button>
   </div>

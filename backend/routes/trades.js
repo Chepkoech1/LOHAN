@@ -1,250 +1,386 @@
 // backend/routes/trades.js
+
 const express = require('express');
 const router = express.Router();
-const { body, validationResult } = require('express-validator');
+const { auth } = require('../middleware/auth');
 const Trade = require('../models/Trade');
 const User = require('../models/User');
-const { auth } = require('../middleware/auth');
-const priceFeed = require('../services/priceFeed');
 
-// @route   POST /api/trades
-// @desc    Place a new trade (real or demo)
-router.post('/', auth, [
-  body('asset').notEmpty(),
-  body('direction').isIn(['call', 'put', 'even', 'odd', 'over', 'under', 'match', 'differ']),
-  body('amount').isFloat({ min: 1 }),
-  body('duration').isIn([30, 60, 300, 900]),
-  body('isDemo').optional().isBoolean(),
-  body('digitPrediction').optional().isInt({ min: 0, max: 9 }) // for match/differ
-], async (req, res) => {
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    return res.status(400).json({ errors: errors.array() });
+// ── Supported Assets ────────────────────────────────────────────────
+// Every asset the platform offers — must match frontend dropdown exactly.
+const SUPPORTED_ASSETS = {
+  synthetic: [
+    'Volatility 10 (1s) Index',
+    'Volatility 10 Index',
+    'Volatility 15 (1s) Index',
+    'Volatility 25 (1s) Index',
+    'Volatility 25 Index',
+    'Volatility 30 (1s) Index',
+    'Volatility 50 (1s) Index',
+    'Volatility 50 Index',
+    'Volatility 75 (1s) Index',
+    'Volatility 75 Index',
+    'Volatility 90 (1s) Index',
+    'Volatility 100 (1s) Index',
+    'Volatility 100 Index',
+  ],
+};
+
+// ── Contract Types and Allowed Directions ───────────────────────────
+const CONTRACT_DIRECTIONS = {
+  'rise_fall':    ['call', 'put'],
+  'higher_lower': ['call', 'put'],
+  'touch_notouch':['call', 'put'],
+  'even_odd':     ['even', 'odd'],
+  'over_under':   ['over', 'under'],
+  'match_differ': ['match', 'differ'],
+};
+
+// ── Contract types that REQUIRE digitPrediction ─────────────────────
+const DIGIT_CONTRACTS = ['match_differ', 'over_under', 'even_odd'];
+
+// ── Which assets support digit contracts ────────────────────────────
+// Digit contracts only work on synthetic indices on Deriv.
+// We replicate the same restriction here.
+const DIGIT_CAPABLE_ASSET_TYPES = ['synthetic'];
+
+// ── Helper: resolve assetType from asset name ────────────────────────
+function resolveAssetType(asset) {
+  for (const [type, list] of Object.entries(SUPPORTED_ASSETS)) {
+    if (list.includes(asset)) return type;
+  }
+  return null;
+}
+
+// ── Helper: simulate price (replace with real WebSocket feed) ────────
+function simulatePrice(asset) {
+  const basePrices = {
+    'BTC/USD': 67000, 'ETH/USD': 3500, 'EUR/USD': 1.085,
+    'GBP/USD': 1.265, 'GOLD': 2350, 'SILVER': 28.5,
+    'Volatility 10 Index': 500, 'Volatility 25 Index': 750,
+    'Volatility 50 Index': 1000, 'Volatility 75 Index': 1250,
+    'Volatility 100 Index': 1500,
+  };
+  const base = basePrices[asset] || 1000;
+  const spread = base * 0.002;
+  return parseFloat((base + (Math.random() - 0.5) * spread).toFixed(5));
+}
+
+// ── Helper: simulate exit price and result ───────────────────────────
+function simulateTradeResult(trade) {
+  const { direction, entryPrice, digitPrediction, asset } = trade;
+  let exitPrice;
+  let won = false;
+
+  // For digit contracts, generate a last digit (0-9)
+  const lastDigit = Math.floor(Math.random() * 10);
+  exitPrice = parseFloat((entryPrice + (Math.random() - 0.5) * entryPrice * 0.01).toFixed(5));
+
+  switch (direction) {
+    case 'call':
+      won = exitPrice > entryPrice;
+      break;
+    case 'put':
+      won = exitPrice < entryPrice;
+      break;
+    case 'even':
+      won = lastDigit % 2 === 0;
+      exitPrice = parseFloat(entryPrice.toFixed(4).slice(-1)) % 2 === 0
+        ? entryPrice
+        : parseFloat((entryPrice + 0.0001).toFixed(5));
+      // Encode last digit into exit price for auditability
+      exitPrice = parseFloat(
+        entryPrice.toFixed(4).slice(0, -1) + (lastDigit % 2 === 0 ? '2' : '3')
+      );
+      won = lastDigit % 2 === 0;
+      break;
+    case 'odd':
+      won = lastDigit % 2 !== 0;
+      exitPrice = parseFloat(
+        entryPrice.toFixed(4).slice(0, -1) + (lastDigit % 2 !== 0 ? '1' : '4')
+      );
+      break;
+    case 'over':
+      // Over: last digit must be GREATER than digitPrediction
+      won = lastDigit > (digitPrediction ?? 4);
+      exitPrice = parseFloat(
+        entryPrice.toFixed(4).slice(0, -1) + lastDigit
+      );
+      break;
+    case 'under':
+      // Under: last digit must be LESS than digitPrediction
+      won = lastDigit < (digitPrediction ?? 5);
+      exitPrice = parseFloat(
+        entryPrice.toFixed(4).slice(0, -1) + lastDigit
+      );
+      break;
+    case 'match':
+      won = lastDigit === digitPrediction;
+      exitPrice = parseFloat(
+        entryPrice.toFixed(4).slice(0, -1) + lastDigit
+      );
+      break;
+    case 'differ':
+      won = lastDigit !== digitPrediction;
+      exitPrice = parseFloat(
+        entryPrice.toFixed(4).slice(0, -1) + lastDigit
+      );
+      break;
+    default:
+      won = false;
   }
 
+  return { exitPrice, won, lastDigit };
+}
+
+// ══════════════════════════════════════════════════════════════════
+// POST /api/trades/place  —  Place a new trade (real or demo)
+// ══════════════════════════════════════════════════════════════════
+router.post('/place', auth, async (req, res) => {
   try {
-    const { asset, direction, amount, duration, isDemo = false, digitPrediction } = req.body;
-    const user = req.user;
+    const {
+      asset,
+      direction,       // 'call'|'put'|'even'|'odd'|'over'|'under'|'match'|'differ'
+      amount,
+      duration,        // seconds
+      digitPrediction, // 0-9, required for match/differ/over/under
+      isDemo = false,
+    } = req.body;
 
-    // Get current price
-    const currentPrice = priceFeed.getPrice(asset);
-    if (!currentPrice) {
-      return res.status(400).json({ message: 'Asset not available' });
+    // ── Derive contractType from direction ─────────────────────────
+    const CONTRACT_TYPE_MAP = {
+      call:   'rise_fall',
+      put:    'rise_fall',
+      match:  'match_differ',
+      differ: 'match_differ',
+      even:   'even_odd',
+      odd:    'even_odd',
+      over:   'over_under',
+      under:  'over_under',
+    };
+    const contractType = CONTRACT_TYPE_MAP[direction];
+    if (!contractType) {
+      return res.status(400).json({
+        success: false,
+        message: `Direction "${direction}" is not supported.`
+      });
     }
 
+    // ── 1. Validate asset ──────────────────────────────────────────
+    const assetType = resolveAssetType(asset);
+    if (!assetType) {
+      return res.status(400).json({
+        success: false,
+        message: `Asset "${asset}" is not available. Check supported assets list.`
+      });
+    }
+
+    // ── 2. Validate direction matches contract type ────────────────
+    const allowedDirections = CONTRACT_DIRECTIONS[contractType];
+    if (!allowedDirections.includes(direction)) {
+      return res.status(400).json({
+        success: false,
+        message: `Direction "${direction}" is not valid for contract type "${contractType}". Allowed: ${allowedDirections.join(', ')}`
+      });
+    }
+
+    // ── 3. Digit contracts only on synthetic assets ────────────────
+    if (DIGIT_CONTRACTS.includes(contractType) && !DIGIT_CAPABLE_ASSET_TYPES.includes(assetType)) {
+      return res.status(400).json({
+        success: false,
+        message: `Digit contracts are only available on Synthetic Indices. "${asset}" is a ${assetType} asset.`
+      });
+    }
+
+    // ── 4. digitPrediction required for match/differ/over/under ───
+    if (['match_differ', 'over_under'].includes(contractType)) {
+      if (digitPrediction === undefined || digitPrediction === null || digitPrediction === '') {
+        return res.status(400).json({
+          success: false,
+          message: `"digitPrediction" (0–9) is required for ${contractType} contracts.`
+        });
+      }
+      const dp = Number(digitPrediction);
+      if (!Number.isInteger(dp) || dp < 0 || dp > 9) {
+        return res.status(400).json({
+          success: false,
+          message: `"digitPrediction" must be an integer between 0 and 9.`
+        });
+      }
+    }
+
+    // ── 5. Validate amount ─────────────────────────────────────────
+    if (!amount || amount < 1) {
+      return res.status(400).json({ success: false, message: 'Minimum trade amount is 1.' });
+    }
+
+    // ── 6. Check balance ───────────────────────────────────────────
+    const user = await User.findById(req.user._id);
+    const availableBalance = isDemo ? (user.demoBalance ?? 10000) : user.balance;
+    if (availableBalance < amount) {
+      return res.status(400).json({
+        success: false,
+        message: `Insufficient ${isDemo ? 'demo' : 'real'} balance. Available: ${availableBalance}`
+      });
+    }
+
+    // ── 7. Get entry price ─────────────────────────────────────────
+    const entryPrice = simulatePrice(asset);
+
+    // ── 8. Calculate expiry ────────────────────────────────────────
+    const expiryTime = new Date(Date.now() + (duration * 1000));
+
+    // ── 9. Deduct balance immediately ──────────────────────────────
     if (isDemo) {
-      // ── DEMO MODE ──
-      const expiryTime = new Date(Date.now() + duration * 1000);
-      const trade = new Trade({
-        user: user._id,
-        asset,
-        assetType: priceFeed.getAssetType(asset),
-        direction,
-        amount,
-        entryPrice: currentPrice,
-        expiryTime,
-        duration,
-        digitPrediction: digitPrediction ?? null,
-        isDemo: true,
-        payoutRate: 1.0,
-      });
-      await trade.save();
-
-      setTimeout(async () => {
-        await resolveTrade(trade._id, true);
-      }, duration * 1000);
-
-      return res.status(201).json({
-        success: true,
-        isDemo: true,
-        trade: {
-          id: trade._id,
-          asset: trade.asset,
-          direction: trade.direction,
-          amount: trade.amount,
-          entryPrice: trade.entryPrice,
-          expiryTime: trade.expiryTime,
-          remainingTime: duration
-        }
-      });
+      user.demoBalance = (user.demoBalance ?? 10000) - amount;
+    } else {
+      user.balance -= amount;
     }
 
-    // ── REAL MODE ──
-    if (user.balance < amount) {
-      return res.status(400).json({ message: 'Insufficient balance' });
-    }
-
-    user.balance -= amount;
-    await user.save();
-
-    const expiryTime = new Date(Date.now() + duration * 1000);
+    // ── 10. Create trade record ────────────────────────────────────
     const trade = new Trade({
       user: user._id,
       asset,
-      assetType: priceFeed.getAssetType(asset),
+      assetType,
       direction,
       amount,
-      entryPrice: currentPrice,
+      digitPrediction: digitPrediction !== undefined ? Number(digitPrediction) : null,
+      entryPrice,
       expiryTime,
       duration,
-      payoutRate: 1.0,
-      digitPrediction: digitPrediction ?? null,
-      isDemo: false
+      payoutRate: 0.85,
+      status: 'active',
+      isDemo,
     });
 
     await trade.save();
+    await user.save();
 
+    // ── 11. Schedule trade resolution ─────────────────────────────
     setTimeout(async () => {
-      await resolveTrade(trade._id, false);
+      try {
+        const { exitPrice, won, lastDigit } = simulateTradeResult({
+          direction,
+          entryPrice,
+          digitPrediction: digitPrediction !== undefined ? Number(digitPrediction) : null,
+          asset,
+        });
+
+        const resolvedTrade = await Trade.findById(trade._id);
+        if (!resolvedTrade || resolvedTrade.status !== 'active') return;
+
+        const profit = won ? parseFloat((amount * 0.85).toFixed(2)) : -amount;
+        const payout = won ? amount + profit : 0;
+
+        resolvedTrade.exitPrice = exitPrice;
+        resolvedTrade.status   = won ? 'won' : 'lost';
+        resolvedTrade.profit   = profit;
+        resolvedTrade.closedAt = new Date();
+        await resolvedTrade.save();
+
+        const resolvedUser = await User.findById(user._id);
+        if (isDemo) {
+          resolvedUser.demoBalance = (resolvedUser.demoBalance ?? 0) + payout;
+        } else {
+          if (won) resolvedUser.balance += payout;
+          resolvedUser.stats.totalTrades += 1;
+          if (won) {
+            resolvedUser.stats.winCount    += 1;
+            resolvedUser.stats.totalProfit  = (resolvedUser.stats.totalProfit || 0) + profit;
+          } else {
+            resolvedUser.stats.lossCount += 1;
+            resolvedUser.stats.totalLoss  = (resolvedUser.stats.totalLoss || 0) + amount;
+          }
+        }
+        await resolvedUser.save();
+
+        console.log(`✅ Trade ${trade._id} resolved: ${won ? 'WON' : 'LOST'} | Last digit: ${lastDigit} | Profit: ${profit}`);
+      } catch (err) {
+        console.error('Trade resolution error:', err);
+      }
     }, duration * 1000);
 
     res.status(201).json({
       success: true,
-      isDemo: false,
+      message: 'Trade placed successfully',
       trade: {
-        id: trade._id,
-        asset: trade.asset,
-        direction: trade.direction,
-        amount: trade.amount,
-        entryPrice: trade.entryPrice,
-        expiryTime: trade.expiryTime,
-        remainingTime: duration
-      },
-      balance: user.balance
+        _id: trade._id,
+        asset,
+        assetType,
+        contractType,
+        direction,
+        amount,
+        digitPrediction: trade.digitPrediction,
+        entryPrice,
+        expiryTime,
+        duration,
+        status: 'active',
+        isDemo,
+      }
     });
+
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Server error' });
+    console.error('Place trade error:', error);
+    res.status(500).json({ success: false, message: 'Server error placing trade', error: error.message });
   }
 });
 
-// @route   GET /api/trades/active
+// ══════════════════════════════════════════════════════════════════
+// GET /api/trades/active  —  Get user's active trades
+// ══════════════════════════════════════════════════════════════════
 router.get('/active', auth, async (req, res) => {
   try {
-    const isDemo = req.query.demo === 'true';
-    const trades = await Trade.find({
-      user: req.user._id,
-      status: 'active',
-      isDemo
-    }).sort({ createdAt: -1 });
+    const { isDemo } = req.query;
+    const filter = { user: req.user._id, status: 'active' };
+    if (isDemo !== undefined) filter.isDemo = isDemo === 'true';
 
-    const now = new Date();
-    const tradesWithTime = trades.map(trade => ({
-      ...trade.toObject(),
-      remainingTime: Math.max(0, Math.ceil((trade.expiryTime - now) / 1000))
-    }));
-
-    res.json(tradesWithTime);
+    const trades = await Trade.find(filter).sort({ createdAt: -1 });
+    res.json({ success: true, trades });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Server error' });
+    res.status(500).json({ success: false, message: 'Server error', error: error.message });
   }
 });
 
-// @route   GET /api/trades/history
+// ══════════════════════════════════════════════════════════════════
+// GET /api/trades/history  —  Get trade history
+// ══════════════════════════════════════════════════════════════════
 router.get('/history', auth, async (req, res) => {
   try {
-    const isDemo = req.query.demo === 'true';
-    const trades = await Trade.find({
-      user: req.user._id,
-      status: { $in: ['won', 'lost', 'cancelled'] },
-      isDemo
-    })
-    .sort({ createdAt: -1 })
-    .limit(50);
+    const { isDemo, page = 1, limit = 20 } = req.query;
+    const filter = { user: req.user._id, status: { $ne: 'active' } };
+    if (isDemo !== undefined) filter.isDemo = isDemo === 'true';
 
-    res.json(trades);
+    const trades = await Trade.find(filter)
+      .sort({ createdAt: -1 })
+      .skip((page - 1) * limit)
+      .limit(Number(limit));
+
+    const total = await Trade.countDocuments(filter);
+
+    res.json({ success: true, trades, total, page: Number(page), pages: Math.ceil(total / limit) });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Server error' });
+    res.status(500).json({ success: false, message: 'Server error', error: error.message });
   }
 });
 
-// ── RESOLVE TRADE ──
-async function resolveTrade(tradeId, isDemo) {
+// ══════════════════════════════════════════════════════════════════
+// GET /api/trades/assets  —  Return all available assets
+// ══════════════════════════════════════════════════════════════════
+router.get('/assets', auth, (req, res) => {
+  res.json({ success: true, assets: SUPPORTED_ASSETS });
+});
+
+// ══════════════════════════════════════════════════════════════════
+// GET /api/trades/:id  —  Get single trade by ID
+// ══════════════════════════════════════════════════════════════════
+router.get('/:id', auth, async (req, res) => {
   try {
-    const trade = await Trade.findById(tradeId).populate('user');
-    if (!trade || trade.status !== 'active') return;
-
-    const exitPrice = priceFeed.getPrice(trade.asset);
-    const lastDigit = Math.round(exitPrice * 10) % 10;
-
-    // Determine win based on contract type
-    let won = false;
-    switch (trade.direction) {
-      case 'call':
-        won = exitPrice > trade.entryPrice;
-        break;
-      case 'put':
-        won = exitPrice < trade.entryPrice;
-        break;
-      case 'even':
-        won = lastDigit % 2 === 0;
-        break;
-      case 'odd':
-        won = lastDigit % 2 !== 0;
-        break;
-      case 'over':
-        won = lastDigit > 5;
-        break;
-      case 'under':
-        won = lastDigit < 5;
-        break;
-      case 'match':
-        won = lastDigit === trade.digitPrediction;
-        break;
-      case 'differ':
-        won = lastDigit !== trade.digitPrediction;
-        break;
-      default:
-        won = exitPrice > trade.entryPrice;
-    }
-
-    trade.exitPrice = exitPrice;
-    trade.status    = won ? 'won' : 'lost';
-    trade.profit    = won ? trade.amount * trade.payoutRate : -trade.amount;
-    trade.closedAt  = new Date();
-    await trade.save();
-
-    const user = trade.user;
-
-    if (isDemo) {
-      const io = global.io;
-      if (io) {
-        io.to(user._id.toString()).emit('demoTradeResolved', {
-          tradeId: trade._id,
-          result: trade.status,
-          profit: trade.profit,
-          won
-        });
-      }
-      return;
-    }
-
-    // Real — update balance and stats
-    if (won) {
-      user.balance += trade.amount * (1 + trade.payoutRate);
-      user.stats.winCount    += 1;
-      user.stats.totalProfit += trade.amount * trade.payoutRate;
-    } else {
-      user.stats.lossCount += 1;
-      user.stats.totalLoss += trade.amount;
-    }
-    user.stats.totalTrades += 1;
-    await user.save();
-
-    const io = global.io;
-    if (io) {
-      io.to(user._id.toString()).emit('tradeResolved', {
-        tradeId: trade._id,
-        result: trade.status,
-        profit: trade.profit,
-        balance: user.balance
-      });
-    }
+    const trade = await Trade.findOne({ _id: req.params.id, user: req.user._id });
+    if (!trade) return res.status(404).json({ success: false, message: 'Trade not found' });
+    res.json({ success: true, trade });
   } catch (error) {
-    console.error('Trade resolution error:', error);
+    res.status(500).json({ success: false, message: 'Server error', error: error.message });
   }
-}
+});
 
 module.exports = router;
