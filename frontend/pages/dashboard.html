@@ -23,7 +23,17 @@
 
     /* NAV */
     .top-nav { height:52px; background:var(--bg2); border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; padding:0 1rem; flex-shrink:0; z-index:200; position:relative; }
-    .logo { font-size:1.1rem; font-weight:800; background:var(--gradient); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+.logo {
+  font-size: 1.1rem;
+  font-weight: 800;
+  background: var(--gradient);
+
+  -webkit-background-clip: text; /* for Safari/old Chrome */
+  background-clip: text;         /* standard */
+
+  -webkit-text-fill-color: transparent;
+  color: transparent;            /* fallback */
+}
     .nav-center { display:flex; align-items:center; gap:0.4rem; }
     .nav-tab { background:none; border:none; color:var(--muted); padding:0.4rem 0.85rem; border-radius:6px; cursor:pointer; font-size:0.82rem; font-family:'Inter',sans-serif; transition:all 0.2s; }
     .nav-tab:hover { color:var(--text); background:rgba(255,255,255,0.05); }
